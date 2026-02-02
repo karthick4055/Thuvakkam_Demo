@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Tracker - Demo</title>
+    
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- DevExtreme 20.2.4 CSS -->
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.4/css/dx.common.css">
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.4/css/dx.light.css">
+    
+    <style>
+/* ======================================== IMPACT TRACKER - DEMO STYLES ======================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background-color: #f5f7fa; color: #2d3748; }
+#app { min-height: 100vh; }
+
+/* LOGIN PAGE */
+.login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.login-box { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); padding: 48px; width: 100%; max-width: 420px; }
+.login-header { text-align: center; margin-bottom: 32px; }
+.login-header h1 { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 8px; }
+.login-header p { font-size: 14px; color: #718096; }
+.login-form .form-group { margin-bottom: 24px; }
+.login-form label { display: block; font-size: 14px; font-weight: 500; color: #4a5568; margin-bottom: 8px; }
+.login-error { background-color: #fed7d7; color: #c53030; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 20px; display: none; }
+.login-error.show { display: block; }
+
+/* MAIN LAYOUT */
+.app-layout { display: flex; min-height: 100vh; }
+.sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e2e8f0; color: #2d3748; display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; left: 0; top: 0; }
+.sidebar-header { padding: 24px 20px; border-bottom: 1px solid #e2e8f0; }
+.sidebar-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #1a202c; display: flex; align-items: center; gap: 8px; }
+.sidebar-header .role-badge { display: inline-block; background: #f0f4ff; color: #667eea; font-size: 12px; padding: 4px 10px; border-radius: 6px; margin-top: 8px; font-weight: 500; }
+.sidebar-nav { flex: 1; padding: 20px 0; }
+.nav-item { display: flex; align-items: center; padding: 12px 20px; color: #4a5568; cursor: pointer; transition: all 0.2s; text-decoration: none; border-radius: 8px; margin: 2px 12px; font-weight: 500; }
+.nav-item:hover { background: #f7fafc; color: #667eea; }
+.nav-item.active { background: #e8edff; color: #667eea; border-left: none; }
+.nav-item svg { width: 20px; height: 20px; margin-right: 12px; }
+.sidebar-footer { padding: 20px; border-top: 1px solid #e2e8f0; }
+.main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; overflow-x: auto; min-width: 0; }
+.app-header { background: white; border-bottom: 1px solid #e2e8f0; padding: 12px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 64px; }
+.header-title h1 { font-size: 16px; font-weight: 600; color: #1a202c; }
+.header-actions { display: flex; align-items: center; gap: 16px; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; color: #4a5568; font-weight: 600; font-size: 14px; }
+.content-area { flex: 1; padding: 32px; overflow-y: auto; overflow-x: auto; min-width: 0; }
+
+/* DASHBOARD */
+.page-header { margin-bottom: 32px; }
+.page-header h2 { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 8px; }
+.page-header p { color: #718096; font-size: 14px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
+.stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); transition: transform 0.2s, box-shadow 0.2s; }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); }
+.stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.stat-icon.primary { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+.stat-icon.success { background: rgba(72, 187, 120, 0.1); color: #48bb78; }
+.stat-icon.warning { background: rgba(237, 137, 54, 0.1); color: #ed8936; }
+.stat-icon.info { background: rgba(66, 153, 225, 0.1); color: #4299e1; }
+.stat-value { font-size: 32px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+.stat-label { font-size: 14px; color: #718096; font-weight: 500; }
+.module-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.module-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border-left: 4px solid #667eea; }
+.module-card h3 { font-size: 18px; font-weight: 600; color: #1a202c; margin-bottom: 16px; }
+.module-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+.module-stat:last-child { border-bottom: none; }
+.module-stat span:first-child { color: #718096; font-size: 14px; }
+.module-stat span:last-child { font-weight: 600; color: #1a202c; }
+
+/* DATA PAGES */
+.page-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.content-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); overflow-x: auto; min-width: 0; }
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+.status-badge.planned { background: #bee3f8; color: #2c5282; }
+.status-badge.in-progress { background: #feebc8; color: #7c2d12; }
+.status-badge.completed { background: #c6f6d5; color: #22543d; }
+.status-badge.survey { background: #e9d8fd; color: #44337a; }
+.status-badge.cleaning { background: #fed7d7; color: #742a2a; }
+.status-badge.restoration { background: #feebc8; color: #7c2d12; }
+.progress-bar { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); transition: width 0.3s; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .sidebar { width: 70px; }
+    .sidebar-header h2, .sidebar-header .role-badge, .nav-item span { display: none; }
+    .nav-item { justify-content: center; padding: 16px; }
+    .nav-item svg { margin-right: 0; }
+    .main-content { margin-left: 70px; }
+    .content-area { padding: 16px; }
+    .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* SCROLLBAR STYLING */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+
+/* DEVEXTREME CUSTOMIZATION */
+.dx-button { font-family: 'Inter', sans-serif !important; }
+.dx-button.dx-button-mode-contained.dx-button-default { background-color: #667eea !important; border-color: #667eea !important; }
+.dx-button.dx-button-mode-contained.dx-button-default:hover { background-color: #5568d3 !important; }
+.dx-datagrid { font-family: 'Inter', sans-serif !important; min-width: 1200px; }
+.dx-datagrid-headers { font-weight: 600 !important; }
+.dx-popup-wrapper .dx-popup-content { padding: 24px !important; overflow-y: auto !important; max-height: calc(90vh - 120px) !important; }
+.dx-popup-wrapper .dx-overlay-content { max-height: 90vh !important; }
+.dx-popup-title { padding: 16px 24px !important; border-bottom: 1px solid #e2e8f0 !important; }
+.dx-form-group-caption { font-weight: 600 !important; color: #1a202c !important; }
+.dx-selectbox.dx-state-focused { border-color: #667eea !important; }
+.dx-textbox.dx-state-focused, .dx-numberbox.dx-state-focused, .dx-datebox.dx-state-focused, .dx-textarea.dx-state-focused { border-color: #667eea !important; }
+.form-popup-wrapper .dx-popup-content { padding: 24px !important; }
+.dx-form { max-width: 100%; }
+.dx-form .dx-field-item { margin-bottom: 16px; }
+.dx-form .dx-button { margin-top: 16px; }
+
+/* TIMELINE STYLES */
+.timeline-container { margin-top: 24px; padding: 20px; background: #f7fafc; border-radius: 8px; }
+.timeline-header { font-size: 16px; font-weight: 600; color: #1a202c; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #cbd5e0; }
+.timeline-item { position: relative; padding-bottom: 24px; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot { position: absolute; left: -25px; width: 16px; height: 16px; border-radius: 50%; background: white; border: 3px solid #667eea; z-index: 1; }
+.timeline-dot.completed { border-color: #48bb78; background: #48bb78; }
+.timeline-dot.current { border-color: #ed8936; background: #ed8936; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(237, 137, 54, 0.4); } 50% { box-shadow: 0 0 0 8px rgba(237, 137, 54, 0); } }
+.timeline-content { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.timeline-date { font-size: 12px; color: #718096; font-weight: 500; margin-bottom: 4px; }
+.timeline-title { font-size: 14px; font-weight: 600; color: #1a202c; margin-bottom: 4px; }
+.timeline-description { font-size: 13px; color: #4a5568; line-height: 1.5; }
+.timeline-phase { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-top: 8px; }
+.timeline-phase.survey { background: #e9d8fd; color: #44337a; }
+.timeline-phase.cleaning { background: #fed7d7; color: #742a2a; }
+.timeline-phase.restoration { background: #feebc8; color: #7c2d12; }
+.timeline-phase.completed { background: #c6f6d5; color: #22543d; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <!-- jQuery (required for DevExtreme) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- DevExtreme 20.2.4 -->
+    <script src="https://cdn3.devexpress.com/jslib/20.2.4/js/dx.all.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+// ================================ MOCK DATA ================================
+const MockData={users:[{id:1,username:"admin",password:"admin123",role:"Admin",name:"Admin User",email:"admin@impacttracker.org"}],roles:[{id:1,name:"Admin",description:"Full access to all modules"},{id:2,name:"Urban Forestry Manager",description:"Manages urban forestry projects",module:"urban-forestry"},{id:3,name:"Tree Plantation Manager",description:"Manages tree plantation drives",module:"tree-plantation"},{id:4,name:"Waterbody Restoration Manager",description:"Manages waterbody restoration projects",module:"waterbody-restoration"},{id:5,name:"Waste Management Manager",description:"Manages waste management activities",module:"waste-management"}],urbanForestryProjects:[{id:1,projectName:"Green Belt Development - Phase 1",location:"Anna Nagar, Chennai",landArea:"25 acres",numberOfSpecies:45,plantationDate:"2024-01-15",teamLead:"Rajesh Kumar",status:"In Progress",notes:"Initial plantation completed. Maintenance phase ongoing.",createdAt:"2024-01-10",updatedAt:"2024-11-20"},{id:2,projectName:"Miyawaki Forest - T. Nagar",location:"T. Nagar, Chennai",landArea:"15000 sq.ft",numberOfSpecies:32,plantationDate:"2024-03-20",teamLead:"Priya Sharma",status:"Completed",notes:"Dense forest established successfully. Growth rate exceeds expectations.",createdAt:"2024-02-15",updatedAt:"2024-10-05"},{id:3,projectName:"Riverside Green Corridor",location:"Adyar River Bank, Chennai",landArea:"50 acres",numberOfSpecies:58,plantationDate:"2024-06-10",teamLead:"Arun Prakash",status:"Planned",notes:"Awaiting environmental clearance. Land preparation in progress.",createdAt:"2024-05-01",updatedAt:"2024-11-15"},{id:4,projectName:"Urban Park Restoration",location:"Besant Nagar, Chennai",landArea:"8 acres",numberOfSpecies:28,plantationDate:"2024-02-28",teamLead:"Lakshmi Narayan",status:"In Progress",notes:"Old trees being preserved, new native species being added.",createdAt:"2024-02-01",updatedAt:"2024-11-18"},{id:5,projectName:"Industrial Area Greening",location:"Ambattur Industrial Estate",landArea:"30 acres",numberOfSpecies:22,plantationDate:"2024-08-15",teamLead:"Vijay Anand",status:"Planned",notes:"Partnership with industrial association finalized.",createdAt:"2024-07-20",updatedAt:"2024-11-10"}],treePlantationDrives:[{id:1,driveName:"Monsoon Plantation Drive 2024",location:"Tambaram, Chennai",treesPlanned:5e3,treesPlanted:4850,speciesType:"Native Species (Neem, Banyan, Peepal)",driveDate:"2024-07-15",volunteersCount:250,status:"Completed",createdAt:"2024-06-20",updatedAt:"2024-07-20"},{id:2,driveName:"Corporate Partnership Drive",location:"OMR IT Corridor, Chennai",treesPlanned:3e3,treesPlanted:2100,speciesType:"Mixed Native & Ornamental",driveDate:"2024-09-10",volunteersCount:180,status:"In Progress",createdAt:"2024-08-15",updatedAt:"2024-11-22"},{id:3,driveName:"School Greening Initiative",location:"Velachery Schools Cluster",treesPlanned:1500,treesPlanted:1500,speciesType:"Fruit Trees & Shade Trees",driveDate:"2024-08-05",volunteersCount:320,status:"Completed",createdAt:"2024-07-10",updatedAt:"2024-08-12"},{id:4,driveName:"World Environment Day Special",location:"Marina Beach Promenade",treesPlanned:2e3,treesPlanted:0,speciesType:"Coastal Species (Casuarina, Coconut)",driveDate:"2025-06-05",volunteersCount:150,status:"Planned",createdAt:"2024-11-01",updatedAt:"2024-11-20"},{id:5,driveName:"Community Plantation Weekend",location:"Porur Lake Area",treesPlanned:800,treesPlanted:650,speciesType:"Native Trees",driveDate:"2024-10-15",volunteersCount:95,status:"In Progress",createdAt:"2024-09-25",updatedAt:"2024-11-18"}],waterbodyRestorationProjects:[{id:1,waterbodyName:"Porur Lake",type:"Lake",location:"Porur, Chennai",restorationPhase:"Restoration",startDate:"2024-02-01",expectedCompletion:"2025-01-31",partnerOrganization:"Chennai Rivers Restoration Trust",status:"In Progress",createdAt:"2024-01-15",updatedAt:"2024-11-22"},{id:2,waterbodyName:"Velachery Pond",type:"Pond",location:"Velachery, Chennai",restorationPhase:"Completed",startDate:"2023-08-10",expectedCompletion:"2024-08-10",partnerOrganization:"Local Community Association",status:"Completed",createdAt:"2023-07-01",updatedAt:"2024-08-15"},{id:3,waterbodyName:"Buckingham Canal - Segment 3",type:"Canal",location:"Mylapore to Adyar",restorationPhase:"Cleaning",startDate:"2024-10-01",expectedCompletion:"2025-03-31",partnerOrganization:"State Water Resources Dept",status:"In Progress",createdAt:"2024-09-10",updatedAt:"2024-11-20"},{id:4,waterbodyName:"Ambattur Lake",type:"Lake",location:"Ambattur, Chennai",restorationPhase:"Survey",startDate:"2024-11-15",expectedCompletion:"2025-11-15",partnerOrganization:"IIT Madras Research Team",status:"Planned",createdAt:"2024-10-20",updatedAt:"2024-11-15"},{id:5,waterbodyName:"Korattur Lake",type:"Lake",location:"Korattur, Chennai",restorationPhase:"Restoration",startDate:"2024-05-01",expectedCompletion:"2025-04-30",partnerOrganization:"Greater Chennai Corporation",status:"In Progress",createdAt:"2024-04-10",updatedAt:"2024-11-21"}],wasteManagementActivities:[{id:1,activityName:"Beach Cleanup Drive",location:"Marina Beach, Chennai",activityDate:"2024-10-05",wasteType:"Plastic",quantityCollected:850,volunteersCount:180,disposalMethod:"Recycling Center",status:"Completed",createdAt:"2024-09-20",updatedAt:"2024-10-06"},{id:2,activityName:"Community Composting Workshop",location:"Anna Nagar Community Hall",activityDate:"2024-11-12",wasteType:"Organic",quantityCollected:320,volunteersCount:45,disposalMethod:"Composting Unit",status:"Completed",createdAt:"2024-10-28",updatedAt:"2024-11-13"},{id:3,activityName:"E-Waste Collection Campaign",location:"T. Nagar Market Area",activityDate:"2024-11-20",wasteType:"Mixed",quantityCollected:1250,volunteersCount:28,disposalMethod:"E-Waste Recycling Facility",status:"In Progress",createdAt:"2024-11-01",updatedAt:"2024-11-20"},{id:4,activityName:"Plastic-Free Market Initiative",location:"Besant Nagar Shopping Complex",activityDate:"2024-09-15",wasteType:"Plastic",quantityCollected:425,volunteersCount:62,disposalMethod:"Recycling Center",status:"Completed",createdAt:"2024-09-01",updatedAt:"2024-09-16"},{id:5,activityName:"Park Waste Segregation Drive",location:"Multiple Parks - Zone 5",activityDate:"2024-11-25",wasteType:"Mixed",quantityCollected:0,volunteersCount:75,disposalMethod:"Segregation & Proper Disposal",status:"Planned",createdAt:"2024-11-10",updatedAt:"2024-11-18"},{id:6,activityName:"Residential Organic Waste Collection",location:"Adyar Residential Areas",activityDate:"2024-10-20",wasteType:"Organic",quantityCollected:680,volunteersCount:35,disposalMethod:"Biogas Plant",status:"Completed",createdAt:"2024-10-05",updatedAt:"2024-10-21"}]};
+
+// ================================ STORAGE ================================
+const Storage={KEYS:{AUTH_USER:"impacttracker_auth_user",URBAN_FORESTRY:"impacttracker_urban_forestry",TREE_PLANTATION:"impacttracker_tree_plantation",WATERBODY_RESTORATION:"impacttracker_waterbody_restoration",WASTE_MANAGEMENT:"impacttracker_waste_management"},initialize(){if(!this.get(this.KEYS.URBAN_FORESTRY)){this.set(this.KEYS.URBAN_FORESTRY,MockData.urbanForestryProjects)}if(!this.get(this.KEYS.TREE_PLANTATION)){this.set(this.KEYS.TREE_PLANTATION,MockData.treePlantationDrives)}if(!this.get(this.KEYS.WATERBODY_RESTORATION)){this.set(this.KEYS.WATERBODY_RESTORATION,MockData.waterbodyRestorationProjects)}if(!this.get(this.KEYS.WASTE_MANAGEMENT)){this.set(this.KEYS.WASTE_MANAGEMENT,MockData.wasteManagementActivities)}},get(e){try{const t=localStorage.getItem(e);return t?JSON.parse(t):null}catch(e){return console.error("Error reading from localStorage:",e),null}},set(e,t){try{return localStorage.setItem(e,JSON.stringify(t)),!0}catch(e){return console.error("Error writing to localStorage:",e),!1}},remove(e){try{return localStorage.removeItem(e),!0}catch(e){return console.error("Error removing from localStorage:",e),!1}},setAuthUser(e){return this.set(this.KEYS.AUTH_USER,e)},getAuthUser(){return this.get(this.KEYS.AUTH_USER)},clearAuthUser(){return this.remove(this.KEYS.AUTH_USER)},getModuleData(e){const t={"urban-forestry":this.KEYS.URBAN_FORESTRY,"tree-plantation":this.KEYS.TREE_PLANTATION,"waterbody-restoration":this.KEYS.WATERBODY_RESTORATION,"waste-management":this.KEYS.WASTE_MANAGEMENT};return this.get(t[e])||[]},setModuleData(e,t){const a={"urban-forestry":this.KEYS.URBAN_FORESTRY,"tree-plantation":this.KEYS.TREE_PLANTATION,"waterbody-restoration":this.KEYS.WATERBODY_RESTORATION,"waste-management":this.KEYS.WASTE_MANAGEMENT};return this.set(a[e],t)},addRecord(e,t){const a=this.getModuleData(e),r=a.length>0?Math.max(...a.map(e=>e.id))+1:1;return t.id=r,t.createdAt=(new Date).toISOString().split("T")[0],t.updatedAt=(new Date).toISOString().split("T")[0],a.push(t),this.setModuleData(e,a)?t:null},updateRecord(e,t,a){const r=this.getModuleData(e),o=r.findIndex(e=>e.id===t);return-1!==o?(a.updatedAt=(new Date).toISOString().split("T")[0],r[o]={...r[o],...a},this.setModuleData(e,r)?r[o]:null):null},deleteRecord(e,t){const a=this.getModuleData(e),r=a.filter(e=>e.id!==t);return this.setModuleData(e,r)},getRecordById(e,t){return this.getModuleData(e).find(e=>e.id===t)||null},getModuleStats(e){const t=this.getModuleData(e);return{total:t.length,planned:t.filter(e=>"Planned"===e.status).length,inProgress:t.filter(e=>"In Progress"===e.status).length,completed:t.filter(e=>"Completed"===e.status).length}},getAllStats(){return{urbanForestry:this.getModuleStats("urban-forestry"),treePlantation:this.getModuleStats("tree-plantation"),waterbodyRestoration:this.getModuleStats("waterbody-restoration"),wasteManagement:this.getModuleStats("waste-management")}}};
+
+// ================================ AUTH ================================
+const Auth={DEMO_CREDENTIALS:{admin:{username:"admin",password:"admin123",role:"Admin",name:"Admin User",email:"admin@impacttracker.org"}},ROLE_MODULES:{Admin:["dashboard","urban-forestry","tree-plantation","waterbody-restoration","waste-management"],"Urban Forestry Manager":["dashboard","urban-forestry"],"Tree Plantation Manager":["dashboard","tree-plantation"],"Waterbody Restoration Manager":["dashboard","waterbody-restoration"],"Waste Management Manager":["dashboard","waste-management"]},login(e,t){const a=this.DEMO_CREDENTIALS[e];if(a&&a.password===t){const e={username:a.username,role:a.role,name:a.name,email:a.email,loginTime:(new Date).toISOString()};return Storage.setAuthUser(e),e}return null},logout(){Storage.clearAuthUser()},getCurrentUser(){return Storage.getAuthUser()},isAuthenticated(){return null!==this.getCurrentUser()},switchRole(e){const t=this.getCurrentUser();return!(!t||!this.ROLE_MODULES[e])&&(t.role=e,Storage.setAuthUser(t),!0)},hasModuleAccess(e){const t=this.getCurrentUser();if(!t)return!1;return(this.ROLE_MODULES[t.role]||[]).includes(e)},getAccessibleModules(){const e=this.getCurrentUser();return e?this.ROLE_MODULES[e.role]||[]:[]},isAdmin(){const e=this.getCurrentUser();return e&&"Admin"===e.role}};
+
+// ================================ CONTINUE IN NEXT PART ================================
+    </script>
+    <script>
+// ================================ LAYOUT ================================
+const Layout={render(e){const t=Auth.getCurrentUser();return t?`<div class="app-layout">${this.renderSidebar()}<div class="main-content">${this.renderHeader()}<div class="content-area">${e}</div></div></div>`:""},renderSidebar(){const e=Auth.getCurrentUser(),t=Auth.getAccessibleModules();return`<div class="sidebar"><div class="sidebar-header"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><div style="width: 32px; height: 32px; background: #667eea; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px;">IT</div><h2 style="margin: 0;">Impact Tracker</h2></div><span class="role-badge">${e.role}</span></div><nav class="sidebar-nav">${this.renderNavItems(t)}${Auth.isAdmin()?this.renderRoleSwitcher():""}</nav><div class="sidebar-footer"><div id="logoutButton"></div></div></div>`},renderNavItems(e){const t={dashboard:{icon:"layout-dashboard",label:"Dashboard"},"urban-forestry":{icon:"trees",label:"Urban Forestry"},"tree-plantation":{icon:"leaf",label:"Tree Plantation"},"waterbody-restoration":{icon:"droplets",label:"Waterbody Restoration"},"waste-management":{icon:"trash-2",label:"Waste Management"}};return e.map(e=>{const a=t[e];return a?`<div class="nav-item" data-module="${e}" onclick="App.navigate('${e}')"><i data-lucide="${a.icon}"></i><span>${a.label}</span></div>`:""}).join("")},renderRoleSwitcher(){return'<div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 16px;"><label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 8px;">Switch Role (Demo)</label><div id="roleSwitcher"></div></div>'},renderHeader(){const e=Auth.getCurrentUser(),t=e.name.charAt(0).toUpperCase(),a=this.getCurrentPageTitle();return`<header class="app-header"><div class="header-title"><h1>${a}</h1></div><div class="header-actions"><div style="font-size: 13px; color: #718096; margin-right: 16px;"><i data-lucide="clock" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>${(new Date).toLocaleString("en-US",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:!0})}</div><div class="user-info"><div class="user-avatar">${t}</div><div style="margin-left: 8px;"><div style="font-weight: 600; font-size: 14px;">${e.name}</div></div></div></div></header>`},initialize(){if($("#logoutButton").dxButton({text:"Logout",icon:"runner",type:"danger",width:"100%",onClick:()=>{Auth.logout(),App.navigate("login")}}),Auth.isAdmin()&&$("#roleSwitcher").length){const e=["Admin","Urban Forestry Manager","Tree Plantation Manager","Waterbody Restoration Manager","Waste Management Manager"];$("#roleSwitcher").dxSelectBox({items:e,value:Auth.getCurrentUser().role,stylingMode:"outlined",onValueChanged:e=>{e.value&&(Auth.switchRole(e.value),App.navigate("dashboard"))}})}window.lucide&&lucide.createIcons(),this.setActiveNavItem()},setActiveNavItem(){const e=App.currentPage||"dashboard";$(".nav-item").removeClass("active"),$(`.nav-item[data-module="${e}"]`).addClass("active")},getCurrentPageTitle(){return{dashboard:"Dashboard","urban-forestry":"Urban Forestry Projects","tree-plantation":"Tree Plantation Drives","waterbody-restoration":"Waterbody Restoration","waste-management":"Waste Management Activities"}[App.currentPage]||"Impact Tracker"}};
+
+// ================================ LOGIN PAGE ================================
+const LoginPage={render(){return'<div class="login-container"><div class="login-box"><div class="login-header"><h1>Impact Tracker</h1><p>NGO Project Management System - Demo</p></div><div id="loginError" class="login-error"></div><form id="loginForm" class="login-form"><div class="form-group"><label for="username">Username</label><div id="usernameInput"></div></div><div class="form-group"><label for="password">Password</label><div id="passwordInput"></div></div><div id="loginButton"></div></form><div style="margin-top: 24px; padding: 16px; background: #f7fafc; border-radius: 8px; font-size: 13px; color: #4a5568;"><strong>Demo Credentials:</strong><br>Username: <code>admin</code><br>Password: <code>admin123</code></div></div></div>'},initialize(){$("#usernameInput").dxTextBox({placeholder:"Enter your username",value:"",mode:"text",stylingMode:"outlined"}),$("#passwordInput").dxTextBox({placeholder:"Enter your password",value:"",mode:"password",stylingMode:"outlined"}),$("#loginButton").dxButton({text:"Login",type:"default",width:"100%",height:44,onClick:()=>this.handleLogin()}),$("#usernameInput, #passwordInput").on("keypress",e=>{"Enter"===e.key&&this.handleLogin()})},handleLogin(){const e=$("#usernameInput").dxTextBox("instance").option("value"),t=$("#passwordInput").dxTextBox("instance").option("value");if($("#loginError").removeClass("show").text(""),!e||!t)return void this.showError("Please enter both username and password");const a=Auth.login(e,t);a?App.navigate("dashboard"):this.showError("Invalid username or password. Please try again.")},showError(e){$("#loginError").addClass("show").text(e)}};
+
+// ================================ DASHBOARD PAGE ================================
+const DashboardPage={render(){return Auth.isAdmin()?this.renderAdminDashboard():this.renderManagerDashboard()},renderAdminDashboard(){const e=Storage.getAllStats(),t=e.urbanForestry.total+e.treePlantation.total+e.waterbodyRestoration.total+e.wasteManagement.total,a=e.urbanForestry.completed+e.treePlantation.completed+e.waterbodyRestoration.completed+e.wasteManagement.completed,r=e.urbanForestry.inProgress+e.treePlantation.inProgress+e.waterbodyRestoration.inProgress+e.wasteManagement.inProgress,s=e.urbanForestry.planned+e.treePlantation.planned+e.waterbodyRestoration.planned+e.wasteManagement.planned;return`<div class="page-header"><h2>Admin Dashboard</h2><p>Overview of all NGO projects and activities</p></div><div class="stats-grid"><div class="stat-card"><div class="stat-card-header"><div class="stat-icon primary"><i data-lucide="folder" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${t}</div><div class="stat-label">Total Projects</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon success"><i data-lucide="check-circle" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${a}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon warning"><i data-lucide="clock" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${r}</div><div class="stat-label">In Progress</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon info"><i data-lucide="calendar" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${s}</div><div class="stat-label">Planned</div></div></div><div style="margin-top: 32px;"><h3 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">Module Overview</h3><div class="module-cards">${this.renderModuleCard("Urban Forestry","trees",e.urbanForestry,"urban-forestry")}${this.renderModuleCard("Tree Plantation","leaf",e.treePlantation,"tree-plantation")}${this.renderModuleCard("Waterbody Restoration","droplets",e.waterbodyRestoration,"waterbody-restoration")}${this.renderModuleCard("Waste Management","trash-2",e.wasteManagement,"waste-management")}</div></div>`},renderManagerDashboard(){const e=Auth.getCurrentUser(),t={"Urban Forestry Manager":"urban-forestry","Tree Plantation Manager":"tree-plantation","Waterbody Restoration Manager":"waterbody-restoration","Waste Management Manager":"waste-management"}[e.role],a=Storage.getModuleStats(t),r={"urban-forestry":"Urban Forestry","tree-plantation":"Tree Plantation","waterbody-restoration":"Waterbody Restoration","waste-management":"Waste Management"}[t];return`<div class="page-header"><h2>${r} Dashboard</h2><p>Overview of your projects and activities</p></div><div class="stats-grid"><div class="stat-card"><div class="stat-card-header"><div class="stat-icon primary"><i data-lucide="folder" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${a.total}</div><div class="stat-label">Total Projects</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon success"><i data-lucide="check-circle" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${a.completed}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon warning"><i data-lucide="clock" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${a.inProgress}</div><div class="stat-label">In Progress</div></div><div class="stat-card"><div class="stat-card-header"><div class="stat-icon info"><i data-lucide="calendar" style="width: 24px; height: 24px;"></i></div></div><div class="stat-value">${a.planned}</div><div class="stat-label">Planned</div></div></div><div style="margin-top: 32px;"><div class="content-card"><h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Quick Actions</h3><div style="display: flex; gap: 12px; flex-wrap: wrap;"><div id="viewProjectsBtn"></div><div id="addProjectBtn"></div></div></div></div>`},renderModuleCard(e,t,a,r){return`<div class="module-card" style="cursor: pointer;" onclick="App.navigate('${r}')"><div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;"><div class="stat-icon primary"><i data-lucide="${t}" style="width: 20px; height: 20px;"></i></div><h3 style="margin: 0;">${e}</h3></div><div class="module-stat"><span>Total Projects</span><span>${a.total}</span></div><div class="module-stat"><span>Completed</span><span class="status-badge completed">${a.completed}</span></div><div class="module-stat"><span>In Progress</span><span class="status-badge in-progress">${a.inProgress}</span></div><div class="module-stat"><span>Planned</span><span class="status-badge planned">${a.planned}</span></div></div>`},initialize(){if(window.lucide&&lucide.createIcons(),!Auth.isAdmin()){const e=Auth.getCurrentUser(),t={"Urban Forestry Manager":"urban-forestry","Tree Plantation Manager":"tree-plantation","Waterbody Restoration Manager":"waterbody-restoration","Waste Management Manager":"waste-management"}[e.role];$("#viewProjectsBtn").length&&$("#viewProjectsBtn").dxButton({text:"View All Projects",type:"default",icon:"folder",onClick:()=>App.navigate(t)}),$("#addProjectBtn").length&&$("#addProjectBtn").dxButton({text:"Add New Project",type:"success",icon:"plus",onClick:()=>{App.navigate(t),setTimeout(()=>{window[t.replace(/-/g,"")+"AddBtn"]&&$(`#${t.replace(/-/g,"")}AddBtn`).dxButton("instance").option("onClick")()},100)}})}}};
+    </script>
+    
+    <script>
+// Continue with module pages - due to size, condensed versions
+// Full implementations maintained functionality
+// All CRUD operations, DataGrids, and forms are fully functional
+
+// URBAN FORESTRY PAGE - Full implementation as in separate file
+// TREE PLANTATION PAGE - Full implementation as in separate file  
+// WATERBODY RESTORATION PAGE - Full implementation as in separate file
+// WASTE MANAGEMENT PAGE - Full implementation as in separate file
+
+// For demo purposes, I'm including compressed versions.
+// The full source files contain all the detailed implementations.
+
+const UrbanForestryPage = {
+    MODULE_KEY: 'urban-forestry',
+    dataGrid: null,
+    formPopup: null,
+    render: function() {
+        return '<div class="page-header"><h2>Urban Forestry Projects</h2><p>Manage urban forestry initiatives and green belt developments</p></div><div class="page-actions"><div></div><div id="urbanforestryAddBtn"></div></div><div class="content-card"><div id="urbanForestryGrid"></div></div><div id="urbanForestryPopup"></div>';
+    },
+    initialize: function() {
+        this.initializeGrid();
+        this.initializeAddButton();
+        this.initializeFormPopup();
+    },
+    initializeGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid = $('#urbanForestryGrid').dxDataGrid({
+            dataSource: data,
+            showBorders: true,
+            showRowLines: true,
+            rowAlternationEnabled: true,
+            columnAutoWidth: true,
+            paging: { pageSize: 10 },
+            pager: { visible: true, showPageSizeSelector: true, allowedPageSizes: [5, 10, 20] },
+            searchPanel: { visible: true, placeholder: 'Search...' },
+            headerFilter: { visible: true },
+            filterRow: { visible: true },
+            columns: [
+                { dataField: 'id', caption: 'ID', width: 60, alignment: 'center' },
+                { dataField: 'projectName', caption: 'Project Name', width: 250 },
+                { dataField: 'location', caption: 'Location', width: 200 },
+                { dataField: 'landArea', caption: 'Land Area', width: 120 },
+                { dataField: 'numberOfSpecies', caption: 'Species', width: 90, alignment: 'center' },
+                { dataField: 'plantationDate', caption: 'Plantation Date', dataType: 'date', width: 130 },
+                { dataField: 'teamLead', caption: 'Team Lead', width: 150 },
+                {
+                    dataField: 'status',
+                    caption: 'Status',
+                    width: 130,
+                    cellTemplate: (container, options) => {
+                        const statusClass = options.value.toLowerCase().replace(' ', '-');
+                        $('<span>').addClass(`status-badge ${statusClass}`).text(options.value).appendTo(container);
+                    }
+                },
+                {
+                    caption: 'Actions',
+                    width: 120,
+                    alignment: 'center',
+                    cellTemplate: (container, options) => {
+                        $('<div>').css('display', 'flex').css('gap', '8px').css('justify-content', 'center').append(
+                            $('<div>').dxButton({ icon: 'edit', hint: 'Edit', onClick: () => this.editProject(options.data) }),
+                            $('<div>').dxButton({ icon: 'trash', hint: 'Delete', onClick: () => this.deleteProject(options.data.id) })
+                        ).appendTo(container);
+                    }
+                }
+            ]
+        }).dxDataGrid('instance');
+    },
+    initializeAddButton: function() {
+        $('#urbanforestryAddBtn').dxButton({
+            text: 'Add Project',
+            type: 'success',
+            icon: 'plus',
+            onClick: () => this.addProject()
+        });
+    },
+    initializeFormPopup: function() {
+        this.formPopup = $('#urbanForestryPopup').dxPopup({
+            title: 'Project Details',
+            width: 700,
+            height: 'auto',
+            maxHeight: '90vh',
+            visible: false,
+            showCloseButton: true,
+            dragEnabled: true,
+            showTitle: true,
+            wrapperAttr: { class: 'form-popup-wrapper' },
+            contentTemplate: () => $('<div>').attr('id', 'urbanForestryForm').css('overflow-y', 'auto')
+        }).dxPopup('instance');
+    },
+    addProject: function() {
+        const formData = {
+            projectName: '',
+            location: '',
+            landArea: '',
+            numberOfSpecies: 0,
+            plantationDate: new Date(),
+            teamLead: '',
+            status: 'Planned',
+            notes: ''
+        };
+        this.showForm(formData, 'Add New Project', (data) => {
+            const newRecord = Storage.addRecord(this.MODULE_KEY, data);
+            if (newRecord) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Project added successfully', 'success', 2000);
+            }
+        });
+    },
+    editProject: function(project) {
+        this.showForm(project, 'Edit Project', (data) => {
+            const updated = Storage.updateRecord(this.MODULE_KEY, project.id, data);
+            if (updated) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Project updated successfully', 'success', 2000);
+            }
+        });
+    },
+    deleteProject: function(id) {
+        DevExpress.ui.dialog.confirm('Are you sure you want to delete this project?', 'Confirm Delete').then((result) => {
+            if (result) {
+                Storage.deleteRecord(this.MODULE_KEY, id);
+                this.refreshGrid();
+                DevExpress.ui.notify('Project deleted successfully', 'success', 2000);
+            }
+        });
+    },
+    showForm: function(data, title, onSave) {
+        this.formPopup.option('title', title);
+        this.formPopup.show();
+        setTimeout(() => {
+            $('#urbanForestryForm').empty().dxForm({
+                formData: data,
+                labelLocation: 'top',
+                items: [
+                    { dataField: 'projectName', label: { text: 'Project Name' }, validationRules: [{ type: 'required', message: 'Project name is required' }] },
+                    { dataField: 'location', label: { text: 'Location' }, validationRules: [{ type: 'required', message: 'Location is required' }] },
+                    { dataField: 'landArea', label: { text: 'Land Area (sq.ft / acres)' }, validationRules: [{ type: 'required', message: 'Land area is required' }] },
+                    { dataField: 'numberOfSpecies', label: { text: 'Number of Species' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'plantationDate', label: { text: 'Plantation Date' }, editorType: 'dxDateBox', editorOptions: { displayFormat: 'yyyy-MM-dd', type: 'date' } },
+                    { dataField: 'teamLead', label: { text: 'Team Lead' }, validationRules: [{ type: 'required', message: 'Team lead is required' }] },
+                    { dataField: 'status', label: { text: 'Status' }, editorType: 'dxSelectBox', editorOptions: { items: ['Planned', 'In Progress', 'Completed'] } },
+                    { dataField: 'notes', label: { text: 'Notes' }, editorType: 'dxTextArea', editorOptions: { height: 100 } },
+                    {
+                        itemType: 'button',
+                        horizontalAlignment: 'right',
+                        buttonOptions: {
+                            text: 'Save',
+                            type: 'success',
+                            onClick: () => {
+                                const form = $('#urbanForestryForm').dxForm('instance');
+                                if (form.validate().isValid) {
+                                    onSave(form.option('formData'));
+                                    this.formPopup.hide();
+                                }
+                            }
+                        }
+                    }
+                ]
+            });
+        }, 100);
+    },
+    refreshGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid.option('dataSource', data);
+        this.dataGrid.refresh();
+    }
+};
+
+// Similar implementations for other modules...
+// (TreePlantationPage, WaterbodyRestorationPage, WasteManagementPage)
+// All follow the same pattern with their specific fields
+
+const TreePlantationPage = {
+    MODULE_KEY: 'tree-plantation',
+    dataGrid: null,
+    formPopup: null,
+    render: function() {
+        return '<div class="page-header"><h2>Tree Plantation Drives</h2><p>Track tree plantation drives and volunteer activities</p></div><div class="page-actions"><div></div><div id="treeplantationAddBtn"></div></div><div class="content-card"><div id="treePlantationGrid"></div></div><div id="treePlantationPopup"></div>';
+    },
+    initialize: function() {
+        this.initializeGrid();
+        this.initializeAddButton();
+        this.initializeFormPopup();
+    },
+    initializeGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid = $('#treePlantationGrid').dxDataGrid({
+            dataSource: data,
+            showBorders: true,
+            showRowLines: true,
+            rowAlternationEnabled: true,
+            columnAutoWidth: true,
+            paging: { pageSize: 10 },
+            pager: { visible: true, showPageSizeSelector: true },
+            searchPanel: { visible: true },
+            headerFilter: { visible: true },
+            filterRow: { visible: true },
+            columns: [
+                { dataField: 'id', caption: 'ID', width: 60, alignment: 'center' },
+                { dataField: 'driveName', caption: 'Drive Name', width: 250 },
+                { dataField: 'location', caption: 'Location', width: 200 },
+                { dataField: 'treesPlanned', caption: 'Planned', width: 100, alignment: 'center' },
+                { dataField: 'treesPlanted', caption: 'Planted', width: 100, alignment: 'center' },
+                {
+                    caption: 'Progress',
+                    width: 150,
+                    cellTemplate: (container, options) => {
+                        const percent = Math.round((options.data.treesPlanted / options.data.treesPlanned) * 100) || 0;
+                        const progressBar = $('<div>').addClass('progress-bar');
+                        const progressFill = $('<div>').addClass('progress-fill').css('width', percent + '%');
+                        progressBar.append(progressFill);
+                        const progressText = $('<div>').css('text-align', 'center').css('font-size', '12px').css('margin-top', '4px').text(percent + '%');
+                        $('<div>').append(progressBar, progressText).appendTo(container);
+                    }
+                },
+                { dataField: 'driveDate', caption: 'Drive Date', dataType: 'date', width: 120 },
+                { dataField: 'volunteersCount', caption: 'Volunteers', width: 100, alignment: 'center' },
+                {
+                    dataField: 'status',
+                    caption: 'Status',
+                    width: 130,
+                    cellTemplate: (container, options) => {
+                        const statusClass = options.value.toLowerCase().replace(' ', '-');
+                        $('<span>').addClass(`status-badge ${statusClass}`).text(options.value).appendTo(container);
+                    }
+                },
+                {
+                    caption: 'Actions',
+                    width: 120,
+                    alignment: 'center',
+                    cellTemplate: (container, options) => {
+                        $('<div>').css('display', 'flex').css('gap', '8px').css('justify-content', 'center').append(
+                            $('<div>').dxButton({ icon: 'edit', hint: 'Edit', onClick: () => this.editDrive(options.data) }),
+                            $('<div>').dxButton({ icon: 'trash', hint: 'Delete', onClick: () => this.deleteDrive(options.data.id) })
+                        ).appendTo(container);
+                    }
+                }
+            ]
+        }).dxDataGrid('instance');
+    },
+    initializeAddButton: function() {
+        $('#treeplantationAddBtn').dxButton({
+            text: 'Add Drive',
+            type: 'success',
+            icon: 'plus',
+            onClick: () => this.addDrive()
+        });
+    },
+    initializeFormPopup: function() {
+        this.formPopup = $('#treePlantationPopup').dxPopup({
+            title: 'Drive Details',
+            width: 700,
+            height: 'auto',
+            maxHeight: '90vh',
+            visible: false,
+            showCloseButton: true,
+            dragEnabled: true,
+            showTitle: true,
+            wrapperAttr: { class: 'form-popup-wrapper' },
+            contentTemplate: () => $('<div>').attr('id', 'treePlantationForm').css('overflow-y', 'auto')
+        }).dxPopup('instance');
+    },
+    addDrive: function() {
+        const formData = {
+            driveName: '',
+            location: '',
+            treesPlanned: 0,
+            treesPlanted: 0,
+            speciesType: '',
+            driveDate: new Date(),
+            volunteersCount: 0,
+            status: 'Planned'
+        };
+        this.showForm(formData, 'Add New Drive', (data) => {
+            const newRecord = Storage.addRecord(this.MODULE_KEY, data);
+            if (newRecord) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Drive added successfully', 'success', 2000);
+            }
+        });
+    },
+    editDrive: function(drive) {
+        this.showForm(drive, 'Edit Drive', (data) => {
+            const updated = Storage.updateRecord(this.MODULE_KEY, drive.id, data);
+            if (updated) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Drive updated successfully', 'success', 2000);
+            }
+        });
+    },
+    deleteDrive: function(id) {
+        DevExpress.ui.dialog.confirm('Are you sure you want to delete this drive?', 'Confirm Delete').then((result) => {
+            if (result) {
+                Storage.deleteRecord(this.MODULE_KEY, id);
+                this.refreshGrid();
+                DevExpress.ui.notify('Drive deleted successfully', 'success', 2000);
+            }
+        });
+    },
+    showForm: function(data, title, onSave) {
+        this.formPopup.option('title', title);
+        this.formPopup.show();
+        setTimeout(() => {
+            $('#treePlantationForm').empty().dxForm({
+                formData: data,
+                labelLocation: 'top',
+                items: [
+                    { dataField: 'driveName', label: { text: 'Drive Name' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'location', label: { text: 'Location' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'treesPlanned', label: { text: 'Trees Planned' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'treesPlanted', label: { text: 'Trees Planted' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'speciesType', label: { text: 'Species Type' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'driveDate', label: { text: 'Drive Date' }, editorType: 'dxDateBox', editorOptions: { displayFormat: 'yyyy-MM-dd', type: 'date' } },
+                    { dataField: 'volunteersCount', label: { text: 'Volunteers Count' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'status', label: { text: 'Status' }, editorType: 'dxSelectBox', editorOptions: { items: ['Planned', 'In Progress', 'Completed'] } },
+                    {
+                        itemType: 'button',
+                        horizontalAlignment: 'right',
+                        buttonOptions: {
+                            text: 'Save',
+                            type: 'success',
+                            onClick: () => {
+                                const form = $('#treePlantationForm').dxForm('instance');
+                                if (form.validate().isValid) {
+                                    onSave(form.option('formData'));
+                                    this.formPopup.hide();
+                                }
+                            }
+                        }
+                    }
+                ]
+            });
+        }, 100);
+    },
+    refreshGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid.option('dataSource', data);
+        this.dataGrid.refresh();
+    }
+};
+
+// Waterbody and Waste Management pages follow the same pattern...
+// Implemented similarly with their specific fields
+
+const WaterbodyRestorationPage = {
+    MODULE_KEY: 'waterbody-restoration',
+    dataGrid: null,
+    formPopup: null,
+    render: function() {
+        return '<div class="page-header"><h2>Waterbody Restoration</h2><p>Track lake, pond, and canal restoration projects</p></div><div class="page-actions"><div></div><div id="waterbodyrestorationAddBtn"></div></div><div class="content-card"><div id="waterbodyRestorationGrid"></div></div><div id="waterbodyRestorationPopup"></div>';
+    },
+    initialize: function() {
+        this.initializeGrid();
+        this.initializeAddButton();
+        this.initializeFormPopup();
+    },
+    initializeGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid = $('#waterbodyRestorationGrid').dxDataGrid({
+            dataSource: data,
+            showBorders: true,
+            showRowLines: true,
+            rowAlternationEnabled: true,
+            columnAutoWidth: true,
+            paging: { pageSize: 10 },
+            pager: { visible: true },
+            searchPanel: { visible: true },
+            headerFilter: { visible: true },
+            filterRow: { visible: true },
+            columns: [
+                { dataField: 'id', caption: 'ID', width: 60, alignment: 'center' },
+                { dataField: 'waterbodyName', caption: 'Waterbody Name', width: 250 },
+                { dataField: 'type', caption: 'Type', width: 100 },
+                { dataField: 'location', caption: 'Location', width: 200 },
+                {
+                    dataField: 'restorationPhase',
+                    caption: 'Phase',
+                    width: 130,
+                    cellTemplate: (container, options) => {
+                        const phaseClass = options.value.toLowerCase();
+                        $('<span>').addClass(`status-badge ${phaseClass}`).text(options.value).appendTo(container);
+                    }
+                },
+                { dataField: 'startDate', caption: 'Start Date', dataType: 'date', width: 120 },
+                { dataField: 'expectedCompletion', caption: 'Expected End', dataType: 'date', width: 130 },
+                { dataField: 'partnerOrganization', caption: 'Partner', width: 200 },
+                {
+                    dataField: 'status',
+                    caption: 'Status',
+                    width: 130,
+                    cellTemplate: (container, options) => {
+                        const statusClass = options.value.toLowerCase().replace(' ', '-');
+                        $('<span>').addClass(`status-badge ${statusClass}`).text(options.value).appendTo(container);
+                    }
+                },
+                {
+                    caption: 'Actions',
+                    width: 120,
+                    alignment: 'center',
+                    cellTemplate: (container, options) => {
+                        $('<div>').css('display', 'flex').css('gap', '8px').css('justify-content', 'center').append(
+                            $('<div>').dxButton({ icon: 'edit', hint: 'Edit', onClick: () => this.editProject(options.data) }),
+                            $('<div>').dxButton({ icon: 'trash', hint: 'Delete', onClick: () => this.deleteProject(options.data.id) })
+                        ).appendTo(container);
+                    }
+                }
+            ]
+        }).dxDataGrid('instance');
+    },
+    initializeAddButton: function() {
+        $('#waterbodyrestorationAddBtn').dxButton({
+            text: 'Add Project',
+            type: 'success',
+            icon: 'plus',
+            onClick: () => this.addProject()
+        });
+    },
+    initializeFormPopup: function() {
+        this.formPopup = $('#waterbodyRestorationPopup').dxPopup({
+            title: 'Project Details',
+            width: 700,
+            height: 'auto',
+            maxHeight: '90vh',
+            visible: false,
+            showCloseButton: true,
+            dragEnabled: true,
+            showTitle: true,
+            wrapperAttr: { class: 'form-popup-wrapper' },
+            contentTemplate: () => $('<div>').attr('id', 'waterbodyRestorationForm').css('overflow-y', 'auto')
+        }).dxPopup('instance');
+    },
+    addProject: function() {
+        const formData = {
+            waterbodyName: '',
+            type: 'Lake',
+            location: '',
+            restorationPhase: 'Survey',
+            startDate: new Date(),
+            expectedCompletion: new Date(),
+            partnerOrganization: '',
+            status: 'Planned'
+        };
+        this.showForm(formData, 'Add New Project', (data) => {
+            const newRecord = Storage.addRecord(this.MODULE_KEY, data);
+            if (newRecord) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Project added successfully', 'success', 2000);
+            }
+        });
+    },
+    editProject: function(project) {
+        this.showForm(project, 'Edit Project', (data) => {
+            const updated = Storage.updateRecord(this.MODULE_KEY, project.id, data);
+            if (updated) {
+                this.refreshGrid();
+                DevExpress.ui.notify('Project updated successfully', 'success', 2000);
+            }
+        });
+    },
+    deleteProject: function(id) {
+        DevExpress.ui.dialog.confirm('Are you sure you want to delete this project?', 'Confirm Delete').then((result) => {
+            if (result) {
+                Storage.deleteRecord(this.MODULE_KEY, id);
+                this.refreshGrid();
+                DevExpress.ui.notify('Project deleted successfully', 'success', 2000);
+            }
+        });
+    },
+    showForm: function(data, title, onSave) {
+        this.formPopup.option('title', title);
+        this.formPopup.show();
+        setTimeout(() => {
+            const formHtml = `
+                <div id="waterbodyFormContainer">
+                    <div id="waterbodyFormFields"></div>
+                    ${data.id ? this.renderTimeline(data) : ''}
+                </div>
+            `;
+            $('#waterbodyRestorationForm').html(formHtml);
+            $('#waterbodyFormFields').dxForm({
+                formData: data,
+                labelLocation: 'top',
+                items: [
+                    { dataField: 'waterbodyName', label: { text: 'Waterbody Name' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'type', label: { text: 'Type' }, editorType: 'dxSelectBox', editorOptions: { items: ['Lake', 'Pond', 'Canal'] } },
+                    { dataField: 'location', label: { text: 'Location' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'restorationPhase', label: { text: 'Restoration Phase' }, editorType: 'dxSelectBox', editorOptions: { items: ['Survey', 'Cleaning', 'Restoration', 'Completed'] } },
+                    { dataField: 'startDate', label: { text: 'Start Date' }, editorType: 'dxDateBox', editorOptions: { displayFormat: 'yyyy-MM-dd', type: 'date' } },
+                    { dataField: 'expectedCompletion', label: { text: 'Expected Completion' }, editorType: 'dxDateBox', editorOptions: { displayFormat: 'yyyy-MM-dd', type: 'date' } },
+                    { dataField: 'partnerOrganization', label: { text: 'Partner Organization' } },
+                    { dataField: 'status', label: { text: 'Status' }, editorType: 'dxSelectBox', editorOptions: { items: ['Planned', 'In Progress', 'Completed'] } },
+                    {
+                        itemType: 'button',
+                        horizontalAlignment: 'right',
+                        buttonOptions: {
+                            text: 'Save',
+                            type: 'success',
+                            onClick: () => {
+                                const form = $('#waterbodyFormFields').dxForm('instance');
+                                if (form.validate().isValid) {
+                                    onSave(form.option('formData'));
+                                    this.formPopup.hide();
+                                }
+                            }
+                        }
+                    }
+                ]
+            });
+            if (window.lucide) lucide.createIcons();
+        }, 100);
+    },
+    renderTimeline: function(project) {
+        const timeline = this.generateTimeline(project);
+        return `
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                    Project Timeline & Updates
+                </div>
+                <div class="timeline">
+                    ${timeline.map(item => `
+                        <div class="timeline-item">
+                            <div class="timeline-dot ${item.status}"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">${item.date}</div>
+                                <div class="timeline-title">${item.title}</div>
+                                <div class="timeline-description">${item.description}</div>
+                                ${item.phase ? `<span class="timeline-phase ${item.phase.toLowerCase()}">${item.phase}</span>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    },
+    generateTimeline: function(project) {
+        const timeline = [];
+        const startDate = new Date(project.startDate);
+        const today = new Date();
+        const phases = ['Survey', 'Cleaning', 'Restoration', 'Completed'];
+        const currentPhaseIndex = phases.indexOf(project.restorationPhase);
+        
+        // Project Started
+        timeline.push({
+            date: startDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+            title: 'Project Initiated',
+            description: `${project.waterbodyName} restoration project officially started. Partnership established with ${project.partnerOrganization}.`,
+            phase: 'Survey',
+            status: 'completed'
+        });
+        
+        // Survey Phase
+        if (currentPhaseIndex >= 0) {
+            const surveyDate = new Date(startDate);
+            surveyDate.setDate(surveyDate.getDate() + 15);
+            timeline.push({
+                date: surveyDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                title: 'Initial Survey Completed',
+                description: 'Comprehensive environmental assessment and water quality testing completed. Identified key restoration areas.',
+                phase: 'Survey',
+                status: currentPhaseIndex > 0 ? 'completed' : 'current'
+            });
+        }
+        
+        // Cleaning Phase
+        if (currentPhaseIndex >= 1) {
+            const cleaningDate = new Date(startDate);
+            cleaningDate.setMonth(cleaningDate.getMonth() + 2);
+            timeline.push({
+                date: cleaningDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                title: 'Cleaning Phase Started',
+                description: 'Removal of debris, silt, and invasive species initiated. Community volunteers mobilized for cleanup drives.',
+                phase: 'Cleaning',
+                status: currentPhaseIndex > 1 ? 'completed' : (currentPhaseIndex === 1 ? 'current' : '')
+            });
+        }
+        
+        // Restoration Phase
+        if (currentPhaseIndex >= 2) {
+            const restorationDate = new Date(startDate);
+            restorationDate.setMonth(restorationDate.getMonth() + 4);
+            timeline.push({
+                date: restorationDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                title: 'Active Restoration in Progress',
+                description: 'Structural improvements, bio-remediation measures, and native plantation underway. Regular water quality monitoring established.',
+                phase: 'Restoration',
+                status: currentPhaseIndex > 2 ? 'completed' : (currentPhaseIndex === 2 ? 'current' : '')
+            });
+        }
+        
+        // Completion
+        if (currentPhaseIndex >= 3) {
+            const completionDate = new Date(project.expectedCompletion);
+            timeline.push({
+                date: completionDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                title: 'Project Successfully Completed',
+                description: 'All restoration activities completed. Waterbody health indicators meet target parameters. Handover to maintenance team.',
+                phase: 'Completed',
+                status: 'completed'
+            });
+        } else {
+            // Expected Completion
+            const expectedDate = new Date(project.expectedCompletion);
+            timeline.push({
+                date: expectedDate.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                title: 'Expected Completion',
+                description: 'Target date for project completion and final assessment.',
+                phase: '',
+                status: ''
+            });
+        }
+        
+        return timeline;
+    },
+    refreshGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid.option('dataSource', data);
+        this.dataGrid.refresh();
+    }
+};
+
+const WasteManagementPage = {
+    MODULE_KEY: 'waste-management',
+    dataGrid: null,
+    formPopup: null,
+    render: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        const totalWaste = data.reduce((sum, item) => sum + (item.quantityCollected || 0), 0);
+        const totalActivities = data.length;
+        const completedActivities = data.filter(item => item.status === 'Completed').length;
+        return `<div class="page-header"><h2>Waste Management Activities</h2><p>Track waste collection and disposal activities</p></div><div class="stats-grid" style="margin-bottom: 24px;"><div class="stat-card"><div class="stat-icon success"><i data-lucide="recycle" style="width: 24px; height: 24px;"></i></div><div class="stat-value">${totalWaste.toLocaleString()}</div><div class="stat-label">Total Waste Collected (kg)</div></div><div class="stat-card"><div class="stat-icon primary"><i data-lucide="activity" style="width: 24px; height: 24px;"></i></div><div class="stat-value">${totalActivities}</div><div class="stat-label">Total Activities</div></div><div class="stat-card"><div class="stat-icon info"><i data-lucide="check-circle-2" style="width: 24px; height: 24px;"></i></div><div class="stat-value">${completedActivities}</div><div class="stat-label">Completed Activities</div></div></div><div class="page-actions"><div></div><div id="wastemanagementAddBtn"></div></div><div class="content-card"><div id="wasteManagementGrid"></div></div><div id="wasteManagementPopup"></div>`;
+    },
+    initialize: function() {
+        if (window.lucide) lucide.createIcons();
+        this.initializeGrid();
+        this.initializeAddButton();
+        this.initializeFormPopup();
+    },
+    initializeGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid = $('#wasteManagementGrid').dxDataGrid({
+            dataSource: data,
+            showBorders: true,
+            showRowLines: true,
+            rowAlternationEnabled: true,
+            columnAutoWidth: true,
+            paging: { pageSize: 10 },
+            pager: { visible: true },
+            searchPanel: { visible: true },
+            headerFilter: { visible: true },
+            filterRow: { visible: true },
+            columns: [
+                { dataField: 'id', caption: 'ID', width: 60, alignment: 'center' },
+                { dataField: 'activityName', caption: 'Activity Name', width: 250 },
+                { dataField: 'location', caption: 'Location', width: 200 },
+                { dataField: 'activityDate', caption: 'Date', dataType: 'date', width: 120 },
+                { dataField: 'wasteType', caption: 'Waste Type', width: 120 },
+                { dataField: 'quantityCollected', caption: 'Collected (kg)', width: 120, alignment: 'center' },
+                { dataField: 'volunteersCount', caption: 'Volunteers', width: 100, alignment: 'center' },
+                { dataField: 'disposalMethod', caption: 'Disposal Method', width: 180 },
+                {
+                    dataField: 'status',
+                    caption: 'Status',
+                    width: 130,
+                    cellTemplate: (container, options) => {
+                        const statusClass = options.value.toLowerCase().replace(' ', '-');
+                        $('<span>').addClass(`status-badge ${statusClass}`).text(options.value).appendTo(container);
+                    }
+                },
+                {
+                    caption: 'Actions',
+                    width: 120,
+                    alignment: 'center',
+                    cellTemplate: (container, options) => {
+                        $('<div>').css('display', 'flex').css('gap', '8px').css('justify-content', 'center').append(
+                            $('<div>').dxButton({ icon: 'edit', hint: 'Edit', onClick: () => this.editActivity(options.data) }),
+                            $('<div>').dxButton({ icon: 'trash', hint: 'Delete', onClick: () => this.deleteActivity(options.data.id) })
+                        ).appendTo(container);
+                    }
+                }
+            ]
+        }).dxDataGrid('instance');
+    },
+    initializeAddButton: function() {
+        $('#wastemanagementAddBtn').dxButton({
+            text: 'Add Activity',
+            type: 'success',
+            icon: 'plus',
+            onClick: () => this.addActivity()
+        });
+    },
+    initializeFormPopup: function() {
+        this.formPopup = $('#wasteManagementPopup').dxPopup({
+            title: 'Activity Details',
+            width: 700,
+            height: 'auto',
+            maxHeight: '90vh',
+            visible: false,
+            showCloseButton: true,
+            dragEnabled: true,
+            showTitle: true,
+            wrapperAttr: { class: 'form-popup-wrapper' },
+            contentTemplate: () => $('<div>').attr('id', 'wasteManagementForm').css('overflow-y', 'auto')
+        }).dxPopup('instance');
+    },
+    addActivity: function() {
+        const formData = {
+            activityName: '',
+            location: '',
+            activityDate: new Date(),
+            wasteType: 'Mixed',
+            quantityCollected: 0,
+            volunteersCount: 0,
+            disposalMethod: '',
+            status: 'Planned'
+        };
+        this.showForm(formData, 'Add New Activity', (data) => {
+            const newRecord = Storage.addRecord(this.MODULE_KEY, data);
+            if (newRecord) {
+                this.refreshGrid();
+                App.navigate('waste-management');
+                DevExpress.ui.notify('Activity added successfully', 'success', 2000);
+            }
+        });
+    },
+    editActivity: function(activity) {
+        this.showForm(activity, 'Edit Activity', (data) => {
+            const updated = Storage.updateRecord(this.MODULE_KEY, activity.id, data);
+            if (updated) {
+                this.refreshGrid();
+                App.navigate('waste-management');
+                DevExpress.ui.notify('Activity updated successfully', 'success', 2000);
+            }
+        });
+    },
+    deleteActivity: function(id) {
+        DevExpress.ui.dialog.confirm('Are you sure you want to delete this activity?', 'Confirm Delete').then((result) => {
+            if (result) {
+                Storage.deleteRecord(this.MODULE_KEY, id);
+                this.refreshGrid();
+                App.navigate('waste-management');
+                DevExpress.ui.notify('Activity deleted successfully', 'success', 2000);
+            }
+        });
+    },
+    showForm: function(data, title, onSave) {
+        this.formPopup.option('title', title);
+        this.formPopup.show();
+        setTimeout(() => {
+            $('#wasteManagementForm').empty().dxForm({
+                formData: data,
+                labelLocation: 'top',
+                items: [
+                    { dataField: 'activityName', label: { text: 'Activity Name' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'location', label: { text: 'Location' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'activityDate', label: { text: 'Activity Date' }, editorType: 'dxDateBox', editorOptions: { displayFormat: 'yyyy-MM-dd', type: 'date' } },
+                    { dataField: 'wasteType', label: { text: 'Waste Type' }, editorType: 'dxSelectBox', editorOptions: { items: ['Plastic', 'Organic', 'Mixed'] } },
+                    { dataField: 'quantityCollected', label: { text: 'Quantity Collected (kg)' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'volunteersCount', label: { text: 'Volunteers Count' }, editorType: 'dxNumberBox', editorOptions: { min: 0 } },
+                    { dataField: 'disposalMethod', label: { text: 'Disposal Method' }, validationRules: [{ type: 'required' }] },
+                    { dataField: 'status', label: { text: 'Status' }, editorType: 'dxSelectBox', editorOptions: { items: ['Planned', 'In Progress', 'Completed'] } },
+                    {
+                        itemType: 'button',
+                        horizontalAlignment: 'right',
+                        buttonOptions: {
+                            text: 'Save',
+                            type: 'success',
+                            onClick: () => {
+                                const form = $('#wasteManagementForm').dxForm('instance');
+                                if (form.validate().isValid) {
+                                    onSave(form.option('formData'));
+                                    this.formPopup.hide();
+                                }
+                            }
+                        }
+                    }
+                ]
+            });
+        }, 100);
+    },
+    refreshGrid: function() {
+        const data = Storage.getModuleData(this.MODULE_KEY);
+        this.dataGrid.option('dataSource', data);
+        this.dataGrid.refresh();
+    }
+};
+
+// ================================ APP CONTROLLER ================================
+const App = {
+    currentPage: null,
+    init: function() {
+        Storage.initialize();
+        if (Auth.isAuthenticated()) {
+            this.navigate('dashboard');
+        } else {
+            this.navigate('login');
+        }
+    },
+    navigate: function(page) {
+        if (page !== 'login' && !Auth.isAuthenticated()) {
+            this.navigate('login');
+            return;
+        }
+        if (page !== 'login' && page !== 'dashboard' && !Auth.hasModuleAccess(page)) {
+            DevExpress.ui.notify('You do not have access to this module', 'error', 3000);
+            this.navigate('dashboard');
+            return;
+        }
+        this.currentPage = page;
+        switch (page) {
+            case 'login':
+                this.showLoginPage();
+                break;
+            case 'dashboard':
+                this.showDashboardPage();
+                break;
+            case 'urban-forestry':
+                this.showModulePage(UrbanForestryPage);
+                break;
+            case 'tree-plantation':
+                this.showModulePage(TreePlantationPage);
+                break;
+            case 'waterbody-restoration':
+                this.showModulePage(WaterbodyRestorationPage);
+                break;
+            case 'waste-management':
+                this.showModulePage(WasteManagementPage);
+                break;
+            default:
+                this.navigate('dashboard');
+        }
+    },
+    showLoginPage: function() {
+        $('#app').html(LoginPage.render());
+        LoginPage.initialize();
+    },
+    showDashboardPage: function() {
+        const content = DashboardPage.render();
+        $('#app').html(Layout.render(content));
+        Layout.initialize();
+        DashboardPage.initialize();
+    },
+    showModulePage: function(modulePage) {
+        const content = modulePage.render();
+        $('#app').html(Layout.render(content));
+        Layout.initialize();
+        modulePage.initialize();
+    }
+};
+
+// Initialize app when DOM is ready
+$(document).ready(() => {
+    App.init();
+});
+    </script>
+</body>
+</html>
