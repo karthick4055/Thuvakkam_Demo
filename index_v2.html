@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thuvakkam Programme Management Portal - UI Prototype</title>
+<style>
+:root{
+  --orange:#f57b16;
+  --orange-dark:#db6610;
+  --orange-soft:#fff1e4;
+  --ink:#273142;
+  --muted:#748094;
+  --line:#e8ebf0;
+  --bg:#f5f7fa;
+  --white:#fff;
+  --green:#1f9d68;
+  --red:#d84d4d;
+  --amber:#c88a19;
+  --blue:#3c78d8;
+  --shadow:0 8px 28px rgba(35,50,75,.08);
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+.hidden{display:none!important}
+.app{min-height:100vh}
+.login-screen{min-height:100vh;display:flex;background:linear-gradient(135deg,#fff7ef 0,#f6f8fb 60%,#eef2f7 100%)}
+.login-left{width:44%;padding:64px 7%;display:flex;flex-direction:column;justify-content:center}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:35px}
+.brand-mark{width:52px;height:52px;background:var(--orange);border-radius:15px;position:relative;box-shadow:0 8px 22px rgba(245,123,22,.3)}
+.brand-mark:before,.brand-mark:after{content:"";position:absolute;border:4px solid #fff;border-radius:50%}
+.brand-mark:before{width:20px;height:20px;left:12px;top:9px}
+.brand-mark:after{width:10px;height:10px;left:21px;top:18px}
+.brand h1{margin:0;font-size:28px;letter-spacing:.4px}
+.brand span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.login-left h2{font-size:39px;line-height:1.08;margin:0 0 15px}
+.login-left p{color:#667085;line-height:1.7;max-width:600px}
+.login-highlights{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:26px}
+.highlight{background:#fff;border:1px solid var(--line);padding:14px;border-radius:12px;box-shadow:0 4px 14px rgba(35,50,75,.04)}
+.highlight strong{font-size:20px;display:block;color:var(--orange-dark)}
+.highlight small{color:var(--muted)}
+.login-right{width:56%;display:flex;align-items:center;justify-content:center;padding:30px}
+.login-card{background:#fff;width:min(440px,94%);border-radius:18px;box-shadow:0 18px 50px rgba(42,55,80,.15);padding:35px}
+.login-card h3{margin:0 0 8px;font-size:26px}
+.login-card .sub{color:var(--muted);margin-bottom:24px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #d9dee7;border-radius:8px;outline:none;background:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#f0a366;box-shadow:0 0 0 3px rgba(245,123,22,.12)}
+.login-btn,.primary{border:0;background:var(--orange);color:#fff;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+.login-btn{width:100%;padding:13px}
+.demo-note{margin-top:14px;padding:11px 12px;background:var(--orange-soft);border:1px dashed #f2b27c;border-radius:8px;font-size:12px;color:#7b4d2c}
+.error{color:var(--red);font-size:13px;margin-top:8px}
+
+.shell{display:flex;min-height:100vh}
+.sidebar{width:284px;background:var(--orange);color:#fff;position:fixed;left:0;top:0;bottom:0;z-index:30;overflow:auto}
+.side-brand{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.18);display:flex;align-items:center;gap:11px}
+.side-brand .brand-mini{width:40px;height:40px;border-radius:10px;background:#fff;position:relative}
+.side-brand .brand-mini:before{content:"";position:absolute;left:8px;top:9px;width:20px;height:20px;border:4px solid var(--orange);border-radius:50%}
+.side-brand strong{font-size:18px}.side-brand small{display:block;font-size:10px;opacity:.78;margin-top:2px}
+.search-box{padding:12px 15px}
+.search-box input{width:100%;padding:12px;border:0;border-radius:8px;outline:0}
+.side-section{padding:12px 15px 7px;font-size:10px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:1px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;margin:2px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.17)}
+.nav-item .ico{width:22px;text-align:center}
+.nav-item .chev{margin-left:auto;font-size:12px}
+.sidebar-footer{padding:15px;margin-top:10px;font-size:11px;opacity:.7}
+
+.main{margin-left:284px;flex:1;min-width:0}
+.topbar{height:70px;background:var(--orange);color:#fff;display:flex;align-items:center;padding:0 19px;gap:18px;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.hamb{font-size:27px;cursor:pointer}
+.top-title{font-size:17px;font-weight:600}
+.top-title small{opacity:.8;font-weight:400}
+.top-spacer{flex:1}
+.user-info{text-align:right;line-height:1.2}
+.user-info strong{font-size:12px}.user-info small{font-size:10px;opacity:.78}
+.avatar{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:800}
+.user-menu-wrap{position:relative}
+.user-trigger{border:0;background:transparent;color:#fff;display:flex;align-items:center;gap:9px;padding:3px 0;cursor:pointer}
+.user-trigger .user-info{text-align:right}
+.user-caret{font-size:11px;opacity:.8;margin-left:1px}
+.user-menu{position:absolute;right:0;top:52px;width:245px;background:#fff;color:var(--ink);border-radius:12px;box-shadow:0 14px 35px rgba(25,35,55,.2);border:1px solid var(--line);padding:9px;display:none;z-index:60}
+.user-menu.show{display:block}
+.user-menu-head{padding:10px 11px 9px;border-bottom:1px solid var(--line)}
+.user-menu-head strong{display:block;font-size:13px}
+.user-menu-head span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.user-menu-label{padding:10px 11px 5px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.role-option{display:block;width:100%;text-align:left;border:0;background:#fff;padding:9px 11px;border-radius:7px;color:var(--ink);font-size:12px;cursor:pointer}
+.role-option:hover,.role-option.selected{background:var(--orange-soft);color:var(--orange-dark);font-weight:700}
+.user-menu-divider{height:1px;background:var(--line);margin:8px 0}
+.logout-btn{width:100%;border:0;background:#fff7f7;color:#b03d3d;padding:10px 11px;border-radius:7px;text-align:left;font-weight:600;font-size:12px;cursor:pointer}
+.logout-btn:hover{background:#fdecec}
+.content{padding:22px 20px 38px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}
+.page-head h2{margin:0;font-size:25px}.page-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{border:1px solid #dfe4eb;background:#fff;color:var(--ink);padding:10px 14px;border-radius:8px;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 4px 16px rgba(35,50,75,.03)}
+.kpi-top{display:flex;align-items:center;justify-content:space-between}.kpi-label{color:var(--muted);font-size:12px}.kpi-icon{width:34px;height:34px;background:var(--orange-soft);color:var(--orange-dark);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.kpi strong{display:block;font-size:26px;margin-top:10px}.trend{font-size:11px;margin-top:4px;color:var(--green)}
+.grid{display:grid;gap:16px}.grid-2{grid-template-columns:1.35fr 1fr}.grid-3{grid-template-columns:repeat(3,1fr)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 16px rgba(35,50,75,.03);overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel-head h3{font-size:15px;margin:0}.panel-head span{font-size:11px;color:var(--muted)}
+.panel-body{padding:16px}
+.progress-row{margin-bottom:15px}.progress-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}.bar{height:8px;background:#edf0f4;border-radius:10px;overflow:hidden}.bar > i{display:block;height:100%;background:var(--orange);border-radius:10px}
+.chart{height:215px;display:flex;align-items:flex-end;gap:13px;padding:15px 6px 8px}.barcol{flex:1;text-align:center}.barvalue{background:#f9b27a;border-radius:6px 6px 0 0;min-height:10px}.barcol span{font-size:10px;color:var(--muted);display:block;margin-top:7px}
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:22px}.donut{width:155px;height:155px;border-radius:50%;background:conic-gradient(var(--orange) 0 68%,#5e8fe5 68% 86%,#66b889 86% 100%);position:relative}.donut:after{content:"";position:absolute;inset:28px;background:#fff;border-radius:50%}.legend div{font-size:11px;margin:9px 0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}.dot.o{background:var(--orange)}.dot.b{background:#5e8fe5}.dot.g{background:#66b889}
+
+.table-wrap{overflow:auto}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select{padding:9px 11px;border:1px solid #dfe4eb;border-radius:8px;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:11px 12px;border-bottom:1px solid #eef1f4;text-align:left;white-space:nowrap}th{background:#fafbfc;color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.status{display:inline-block;padding:4px 8px;border-radius:20px;font-size:10px;font-weight:700}.approved{background:#e9f8f0;color:#15714a}.pending{background:#fff3d8;color:#9d6d08}.returned{background:#fdeceb;color:#a23f3f}.draft{background:#eef1f6;color:#667085}.closed{background:#e9edf5;color:#50617a}.progress{background:#eaf1fd;color:#3567b3}
+.small-btn{border:1px solid #dfe4eb;background:#fff;padding:5px 8px;border-radius:6px;font-size:11px;cursor:pointer}
+
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.section-title{font-weight:700;font-size:13px;margin:5px 0 2px;padding-bottom:7px;border-bottom:1px solid var(--line);grid-column:1/-1}.full{grid-column:1/-1}
+.checkbox{display:flex;gap:8px;align-items:center;font-size:12px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:15px}.tab{border:0;background:none;padding:10px 12px;cursor:pointer;color:var(--muted)}.tab.active{color:var(--orange-dark);border-bottom:2px solid var(--orange);font-weight:700}
+
+.notice{padding:12px 14px;border-radius:9px;font-size:12px}.notice.info{background:#eef5ff;color:#385c9c}.notice.warn{background:#fff6df;color:#87620c}
+.timeline{position:relative;padding-left:18px}.timeline:before{content:"";position:absolute;left:6px;top:2px;bottom:2px;width:2px;background:#edf0f4}.tl{position:relative;margin-bottom:15px}.tl:before{content:"";position:absolute;left:-17px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--orange)}.tl strong{font-size:12px}.tl div{font-size:11px;color:var(--muted);margin-top:3px}
+
+.modal{position:fixed;inset:0;background:rgba(17,24,39,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:25px}.modal.show{display:flex}.modal-card{background:#fff;width:min(860px,96vw);max-height:92vh;overflow:auto;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.modal-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.close{border:0;background:none;font-size:21px;cursor:pointer}.modal-body{padding:18px}
+.footer{text-align:center;color:#9aa3b2;font-size:11px;padding:20px 0}
+
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-3{grid-template-columns:1fr}}
+@media(max-width:800px){.sidebar{width:225px}.main{margin-left:225px}.login-left{display:none}.login-right{width:100%}}
+@media(max-width:600px){.sidebar{position:static;width:100%;display:none}.main{margin-left:0}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.content{padding:14px}.topbar{padding:0 12px}}
+
+/* THUVAKKAM WEBSITE BRANDING OVERRIDES */
+:root{
+  --orange:#2f7d32; --orange-dark:#226128; --orange-soft:#fffbd6;
+  --ink:#20231f; --muted:#6e756c; --line:#e4e7df; --bg:#f7f8f3;
+  --green:#2f7d32; --red:#c84b4b; --amber:#a57a00; --blue:#3d73c7;
+  --shadow:0 8px 28px rgba(30,45,28,.09);
+}
+body{background:var(--bg)}
+.login-screen{background:radial-gradient(circle at 10% 15%,#fff59a 0,#fffbdc 25%,#f7f8f3 58%,#eef4e9 100%)}
+.login-left{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(247,248,243,.22))}
+.brand-mark{background:#f3df00;box-shadow:0 8px 22px rgba(213,192,0,.25)}
+.brand-mark:before,.brand-mark:after{border-color:#2f7d32}
+.brand h1,.side-brand strong{color:#222}
+.login-card .brand-mark:before,.login-card .brand-mark:after{border-color:#2f7d32}
+.sidebar{background:linear-gradient(180deg,#2f7d32 0%,#256528 100%)}
+.side-brand{background:#fff;border-bottom:1px solid #edf0e7}
+.side-brand strong{color:#222}.side-brand small{color:#73796f;opacity:1}
+.side-brand .brand-mini{background:#f3df00}
+.side-brand .brand-mini:before{border-color:#2f7d32}
+.search-box input{border:2px solid rgba(255,255,255,.55)}
+.nav-item:hover,.nav-item.active{background:rgba(243,223,0,.19)}
+.nav-item.active{box-shadow:inset 4px 0 #f3df00}
+.topbar{background:#fff;color:#222;border-bottom:3px solid #f3df00;box-shadow:0 2px 10px rgba(30,45,28,.08)}
+.hamb{color:#2f7d32}.top-title{color:#222}.top-title small{color:#7a8177}.user-info small{color:#777}.avatar{background:#f3df00;color:#285d2b}
+.primary,.login-btn{background:#2f7d32}.primary:hover,.login-btn:hover{background:#256528}
+.kpi-icon{background:#fff8bb;color:#2f7d32}
+.bar > i{background:#2f7d32}.donut{background:conic-gradient(#2f7d32 0 68%,#e5cf00 68% 86%,#69a85f 86% 100%)}
+.dot.o{background:#2f7d32}.dot.b{background:#e5cf00}.dot.g{background:#69a85f}
+.tab.active{color:#2f7d32;border-bottom-color:#f3df00}
+.notice.info{background:#eff8ee;color:#356238}.notice.warn{background:#fff9d8;color:#78600a}
+
+.site-logo{width:118px;height:76px;object-fit:contain;border-radius:14px;background:#f3df00;padding:5px;display:block}
+.site-logo-small{width:64px;height:54px;border-radius:11px;padding:3px}
+.site-logo-side{width:40px;height:40px;border-radius:8px;padding:2px;object-fit:contain;background:#f3df00}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <section class="login-left">
+    <div class="brand">
+      <img class="site-logo" src="https://thuvakkam.org/wp-content/uploads/2022/07/Thuvakkam-Tree-with-name-logo.webp" alt="Thuvakkam logo">
+      <div><h1>THUVAKKAM</h1><span>NGO Programme Management Portal</span></div>
+    </div>
+    <h2>Be the Change — manage every programme action from one place.</h2>
+    <p>This client-reference prototype brings Thuvakkam's “Be the Change” spirit into a practical programme-management interface: household registry, agriculture, water interventions, VWC, training, M&E, convergence, reports and administration.</p>
+    <div class="login-highlights">
+      <div class="highlight"><strong>2,200+</strong><small>Target households</small></div>
+      <div class="highlight"><strong>14</strong><small>Target villages</small></div>
+      <div class="highlight"><strong>4</strong><small>Gram Panchayats</small></div>
+      <div class="highlight"><strong>20–50</strong><small>Initial concurrent users</small></div>
+    </div>
+  </section>
+  <section class="login-right">
+    <div class="login-card">
+      <div class="brand" style="margin-bottom:18px">
+        <img class="site-logo site-logo-small" src="https://thuvakkam.org/wp-content/uploads/2022/07/Thuvakkam-Tree-with-name-logo.webp" alt="Thuvakkam logo">
+        <div><h1 style="font-size:22px">Programme Portal</h1><span>Be the Change • Secure sign in</span></div>
+      </div>
+      <h3>Welcome back</h3>
+      <div class="sub">Sign in to manage programme operations.</div>
+      <div class="field"><label>Username</label><input id="loginUser" value="program.manager"></div>
+      <div class="field"><label>Password</label><input id="loginPass" type="password" value="demo123"></div>
+      <button class="login-btn" onclick="login()">Sign In</button>
+      <div id="loginError" class="error"></div>
+      <div class="demo-note"><strong>Prototype login:</strong> use the pre-filled username/password. This page is only a front-end demonstration; production authentication must be connected to Spring Security/SSO.</div>
+    </div>
+  </section>
+</div>
+
+<div id="app" class="app hidden">
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-brand">
+        <img class="brand-mini site-logo-side" src="https://thuvakkam.org/wp-content/uploads/2022/07/Thuvakkam-Tree-with-name-logo.webp" alt="Thuvakkam logo">
+        <div><strong>THUVAKKAM</strong><small>Be the Change • Programme Management</small></div>
+      </div>
+      <div class="search-box"><input id="menuSearch" placeholder="Search menu..." oninput="filterMenus()"></div>
+
+      <div class="side-section">Main</div>
+      <div class="nav-item active" data-page="dashboard"><span class="ico">🏠</span>Dashboard</div>
+
+      <div class="side-section">Programme</div>
+      <div class="nav-item" data-page="households"><span class="ico">👨‍👩‍👧</span>Household & Beneficiary<span class="chev">›</span></div>
+      <div class="nav-item" data-page="agriculture"><span class="ico">🌾</span>Agriculture & Livelihood<span class="chev">›</span></div>
+      <div class="nav-item" data-page="water"><span class="ico">💧</span>Water & Field Interventions<span class="chev">›</span></div>
+      <div class="nav-item" data-page="vwc"><span class="ico">🤝</span>Village Water Committee<span class="chev">›</span></div>
+      <div class="nav-item" data-page="training"><span class="ico">🎓</span>Training & Exposure<span class="chev">›</span></div>
+      <div class="nav-item" data-page="me"><span class="ico">📊</span>M&E / Outcomes<span class="chev">›</span></div>
+      <div class="nav-item" data-page="convergence"><span class="ico">🏛️</span>Convergence<span class="chev">›</span></div>
+      <div class="nav-item" data-page="reports"><span class="ico">📑</span>Reports<span class="chev">›</span></div>
+
+      <div class="side-section">Administration</div>
+      <div class="nav-item" data-page="masters"><span class="ico">🗂️</span>Master Data<span class="chev">›</span></div>
+      <div class="nav-item" data-page="users"><span class="ico">👤</span>Users & Roles<span class="chev">›</span></div>
+      <div class="nav-item" data-page="audit"><span class="ico">🛡️</span>Audit & Activity<span class="chev">›</span></div>
+
+      <div class="sidebar-footer">Be the Change • Client reference prototype<br>Spring Boot + MySQL target architecture</div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="hamb" onclick="toggleSidebar()">☰</div>
+        <div class="top-title" id="topTitle">Dashboard <small>› Programme Overview</small></div>
+        <div class="top-spacer"></div>
+        <div class="user-menu-wrap">
+          <button class="user-trigger" onclick="toggleUserMenu()" aria-label="Open user menu">
+            <div class="user-info"><strong id="topUser">Program Manager</strong><br><small>Logged in • 08 Sep 2026</small></div>
+            <div class="avatar" id="topAvatar">PM</div>
+            <span class="user-caret">▾</span>
+          </button>
+          <div class="user-menu" id="userMenu">
+            <div class="user-menu-head">
+              <strong id="menuUserRole">Program Manager</strong>
+              <span>Current Role</span>
+            </div>
+            <div class="user-menu-label">Switch Role</div>
+            <button class="role-option" data-role="Program Manager" onclick="switchRole('Program Manager')">Program Manager</button>
+            <button class="role-option" data-role="Field Coordinator" onclick="switchRole('Field Coordinator')">Field Coordinator</button>
+            <button class="role-option" data-role="M&E Associate" onclick="switchRole('M&E Associate')">M&E Associate</button>
+            <button class="role-option" data-role="Engineer" onclick="switchRole('Engineer')">Engineer</button>
+            <button class="role-option" data-role="System Administrator" onclick="switchRole('System Administrator')">System Administrator</button>
+            <div class="user-menu-divider"></div>
+            <button class="logout-btn" onclick="logout()">↪ Sign Out</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="content" id="content"></div>
+      <div class="footer">© 2026 Thuvakkam Programme Management Portal • Prototype UI for client requirement confirmation</div>
+    </main>
+  </div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head"><strong id="modalTitle">Add Record</strong><button class="close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const state = {
+  current:'dashboard',
+  role:'Program Manager',
+  username:'program.manager',
+  households:[
+    ['HH-0001','R. Murugan','Kovilur','Kovilur GP','Water Secure','Irrigated','Approved'],
+    ['HH-0002','S. Lakshmi','Kallipatti','Kovilur GP','Partial','Rainfed','Approved'],
+    ['HH-0003','P. Selvam','Melur','Melur GP','Water Secure','Irrigated','Verification Pending'],
+    ['HH-0004','A. Meenakshi','Kottai','Melur GP','At Risk','Rainfed','Returned'],
+    ['HH-0005','M. Ravi','Thoppur','Thoppur GP','Water Secure','Irrigated','Approved']
+  ],
+  assets:[
+    ['WA-001','Check Dam','Kovilur','Kovilur GP','Completed','09 Jun 2026'],
+    ['WA-002','Farm Pond','Melur','Melur GP','In Progress','14 Sep 2026'],
+    ['WA-003','Recharge Pit','Kottai','Melur GP','Verified','30 Aug 2026'],
+    ['WA-004','Water Storage','Thoppur','Thoppur GP','Planned','22 Sep 2026']
+  ]
+};
+const pageMeta = {
+ dashboard:['Dashboard','Programme Overview'],
+ households:['Household & Beneficiary','Registry'],
+ agriculture:['Agriculture & Livelihood','Farm and income outcomes'],
+ water:['Water & Field Interventions','Assets and intervention progress'],
+ vwc:['Village Water Committee','Institutions and governance'],
+ training:['Training & Exposure','Capacity building'],
+ me:['M&E / Outcomes','Indicators and performance'],
+ convergence:['Convergence','Government/community linkage'],
+ reports:['Reports','Management and donor reporting'],
+ masters:['Master Data','Reference data'],
+ users:['Users & Roles','Access control'],
+ audit:['Audit & Activity','Record history and audit trail']
+};
+
+document.addEventListener('click',e=>{
+  const item=e.target.closest('.nav-item');
+  if(item){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));item.classList.add('active');showPage(item.dataset.page);}
+});
+
+function login(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(!u || !p){document.getElementById('loginError').textContent='Please enter username and password.';return}
+  state.username = u;
+  state.role = 'Program Manager';
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  setRoleUI(state.role);
+  showPage('dashboard');
+}
+
+function roleInitials(role){
+  return role.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function setRoleUI(role){
+  state.role = role;
+  document.getElementById('topUser').textContent = role;
+  document.getElementById('menuUserRole').textContent = role;
+  document.getElementById('topAvatar').textContent = roleInitials(role);
+  document.querySelectorAll('.role-option').forEach(btn=>{
+    btn.classList.toggle('selected', btn.dataset.role === role);
+  });
+}
+
+function toggleUserMenu(){
+  document.getElementById('userMenu').classList.toggle('show');
+}
+
+function switchRole(role){
+  setRoleUI(role);
+  document.getElementById('userMenu').classList.remove('show');
+  showToast('Role switched to '+role+'. Permissions are prototype-only until backend authorization is connected.');
+  showPage(state.current || 'dashboard');
+}
+
+function logout(){
+  document.getElementById('userMenu').classList.remove('show');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').textContent='';
+  state.current='dashboard';
+  setRoleUI('Program Manager');
+}
+
+function showPage(page){
+  state.current=page;
+  const meta=pageMeta[page];
+  document.getElementById('topTitle').innerHTML=meta[0]+' <small>› '+meta[1]+'</small>';
+  const c=document.getElementById('content');
+  c.innerHTML = ({dashboard:dashboardPage,households:householdPage,agriculture:agriPage,water:waterPage,vwc:vwcPage,training:trainingPage,me:mePage,convergence:convergencePage,reports:reportsPage,masters:mastersPage,users:usersPage,audit:auditPage}[page])();
+}
+
+function dashboardPage(){
+return `
+<div class="page-head">
+  <div><h2>Programme Dashboard</h2><p>Real-time view of household reach, water, agriculture, training and M&E progress.</p></div>
+  <div class="actions"><button class="secondary" onclick="showModal('Date / Geography Filter',filterForm())">⚙ Filter</button><button class="primary" onclick="showModal('Quick Action',quickActionForm())">＋ Quick Action</button></div>
+</div>
+<div class="cards">
+ ${kpi('Households Enrolled','2,200','👨‍👩‍👧','Target 2,200','100%')}
+ ${kpi('Water Secure HH','1,496','💧','68% of enrolled','+8%')}
+ ${kpi('Active Water Assets','127','🏗️','104 verified','+12 this month')}
+ ${kpi('Training Participants','684','🎓','78% of annual target','+44 this month')}
+</div>
+<div style="height:16px"></div>
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>Intervention Progress</h3><span>Target vs Achievement</span></div>
+    <div class="panel-body">
+      ${progress('Water structures',82,150,123)}
+      ${progress('Irrigation-support HH',71,900,639)}
+      ${progress('Farmer trainings',76,900,684)}
+      ${progress('VWC strengthened',64,56,36)}
+      ${progress('Convergence initiatives',58,50,29)}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Household Water Status</h3><span>All programme geographies</span></div>
+    <div class="panel-body donut-wrap">
+      <div class="donut"></div>
+      <div class="legend">
+        <div><span class="dot o"></span>Water secure — 68%</div>
+        <div><span class="dot b"></span>Partial — 18%</div>
+        <div><span class="dot g"></span>At risk — 14%</div>
+        <div style="margin-top:18px;font-size:12px"><strong>2,200</strong> total households</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="height:16px"></div>
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>Village-wise Household Coverage</h3><span>Top 8 sample rows</span></div>
+    <div class="panel-body">
+      <div class="chart">
+        ${['Kovilur','Melur','Kottai','Thoppur','Kallipatti','Nedungudi','Perumal'].map((x,i)=>`<div class="barcol"><div class="barvalue" style="height:${75+i*13}px"></div><span>${x}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Pending Actions</h3><span>Requires attention</span></div>
+    <div class="panel-body">
+      <div class="timeline">
+        <div class="tl"><strong>12 household records returned</strong><div>Field correction required • due today</div></div>
+        <div class="tl"><strong>7 interventions awaiting verification</strong><div>M&E Associate • oldest 2 days</div></div>
+        <div class="tl"><strong>4 training reports pending</strong><div>Field Coordinator • due 11 Sep</div></div>
+        <div class="tl"><strong>3 M&E indicators missing evidence</strong><div>Programme team • due 12 Sep</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="height:16px"></div>
+<div class="panel">
+  <div class="panel-head"><h3>Recent Activity</h3><span>Latest audit events</span></div>
+  <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Module</th><th>Action</th><th>Record</th><th>Status</th></tr></thead><tbody>
+    <tr><td>10:18 AM</td><td>CRP-07</td><td>Household</td><td>Submitted</td><td>HH-2188</td><td>${badge('Submitted','pending')}</td></tr>
+    <tr><td>09:54 AM</td><td>M&E-01</td><td>Water Asset</td><td>Verified</td><td>WA-003</td><td>${badge('Verified','approved')}</td></tr>
+    <tr><td>09:42 AM</td><td>FC-02</td><td>Training</td><td>Attendance updated</td><td>TR-022</td><td>${badge('Completed','approved')}</td></tr>
+    <tr><td>09:17 AM</td><td>PM-01</td><td>Intervention</td><td>Returned for correction</td><td>IN-044</td><td>${badge('Returned','returned')}</td></tr>
+  </tbody></table></div>
+</div>`;
+}
+
+function householdPage(){
+return `
+<div class="page-head"><div><h2>Household & Beneficiary Registry</h2><p>Maintain household, member, farmer, land and programme participation data.</p></div><div class="actions"><button class="secondary" onclick="exportCSV()">⇩ Export</button><button class="primary" onclick="showModal('Add Household',householdForm())">＋ Add Household</button></div></div>
+<div class="panel">
+<div class="panel-head"><h3>Household List</h3><span>Role: ${state.role}</span></div>
+<div class="panel-body">
+<div class="toolbar"><input placeholder="Search HH ID / name / mobile" oninput="filterTable(this,'householdTable')"><select><option>All GP</option><option>Kovilur GP</option><option>Melur GP</option><option>Thoppur GP</option></select><select><option>All Status</option><option>Approved</option><option>Verification Pending</option><option>Returned</option></select></div>
+<div class="table-wrap"><table id="householdTable"><thead><tr><th>HH ID</th><th>Head Name</th><th>Village</th><th>Gram Panchayat</th><th>Water Status</th><th>Irrigation</th><th>Status</th><th>Action</th></tr></thead><tbody>
+${state.households.map(r=>`<tr>${r.slice(0,6).map(x=>`<td>${x}</td>`).join('')}<td>${badge(r[6],statusClass(r[6]))}</td><td><button class="small-btn" onclick="showModal('Household '+r[0],householdView('${r[0]}'))">View</button></td></tr>`).join('')}
+</tbody></table></div>
+</div></div>`;
+}
+function householdForm(){return `<div class="form-grid">
+<div class="section-title">Identification & Geography</div>
+${field('Household ID','HH-NEW-XXXX','text','System generated / unique')}
+${field('Head of Household','Enter full name','text','Mandatory')}
+${field('Gender','Select','select','Male,Female,Other')}
+${field('Mobile Number','10-digit mobile','text','Unique where available')}
+${field('Gram Panchayat','Select GP','select','Kovilur GP,Melur GP,Thoppur GP')}
+${field('Village','Select village','select','Kovilur,Melur,Kottai,Thoppur,Kallipatti')}
+<div class="section-title">Household & Livelihood</div>
+${field('Household Size','0','number','Must be >= 1')}
+${field('Social Category','Select','select','SC,ST,OBC,General,Other')}
+${field('Primary Livelihood','Select','select','Agriculture,Wage labour,Livestock,Small business,Other')}
+${field('Farmer','Yes / No','select','Yes,No')}
+${field('Land Area (acres)','0.00','number','Cannot be negative')}
+${field('Water Security Status','Select','select','Water Secure,Partial,At Risk')}
+${field('Irrigation Status','Select','select','Irrigated,Rainfed,Other')}
+<div class="section-title">Field Evidence</div>
+${field('Latitude / Longitude','13.000000, 80.000000','text','Capture from GPS where enabled')}
+${field('Household Photo','Choose file','file','Optional / client approval required')}
+${field('Remarks','Notes','textarea','Optional')}
+<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Household')">Save Draft</button><button class="primary" onclick="saveDemo('Household')">Submit</button></div>
+</div>`}
+function householdView(id){return `<div class="tabs"><button class="tab active">Summary</button><button class="tab">Members</button><button class="tab">Land & Crops</button><button class="tab">Interventions</button><button class="tab">M&E</button></div><div class="grid grid-2"><div class="panel"><div class="panel-head"><h3>${id}</h3><span>${badge('Approved','approved')}</span></div><div class="panel-body"><div class="form-grid"><div><b>Head</b><br>R. Murugan</div><div><b>Village</b><br>Kovilur</div><div><b>GP</b><br>Kovilur GP</div><div><b>Household size</b><br>5</div><div><b>Water</b><br>Water Secure</div><div><b>Irrigation</b><br>Irrigated</div></div></div></div><div class="panel"><div class="panel-head"><h3>Workflow</h3></div><div class="panel-body"><div class="timeline"><div class="tl"><strong>Approved</strong><div>PM-01 • 07 Sep 2026</div></div><div class="tl"><strong>Verified</strong><div>M&E-01 • 06 Sep 2026</div></div><div class="tl"><strong>Submitted</strong><div>CRP-07 • 06 Sep 2026</div></div><div class="tl"><strong>Draft created</strong><div>CRP-07 • 05 Sep 2026</div></div></div></div></div></div>`}
+
+function waterPage(){
+return `<div class="page-head"><div><h2>Water & Field Interventions</h2><p>Track water assets, intervention stages, evidence, beneficiaries and O&M ownership.</p></div><div class="actions"><button class="secondary" onclick="showModal('Filter Interventions',filterForm())">⚙ Filter</button><button class="primary" onclick="showModal('Add Intervention',waterForm())">＋ Add Intervention</button></div></div>
+<div class="cards">${kpi('Water Structures','150','💧','Annual target','123 completed')}${kpi('Verified Assets','104','✅','of 127 active','82%')}${kpi('O&M Due','18','🛠️','next 30 days','Action')}${kpi('Evidence Missing','7','📷','records','Review')}</div>
+<div style="height:16px"></div>
+<div class="panel"><div class="panel-head"><h3>Asset & Intervention Register</h3><span>GPS / photo evidence supported</span></div><div class="panel-body"><div class="toolbar"><input placeholder="Search asset / type / village" oninput="filterTable(this,'assetTable')"><select><option>All Status</option><option>Planned</option><option>In Progress</option><option>Completed</option><option>Verified</option></select><select><option>All Types</option><option>Check Dam</option><option>Farm Pond</option><option>Recharge Pit</option><option>Water Storage</option></select></div>
+<div class="table-wrap"><table id="assetTable"><thead><tr><th>Asset ID</th><th>Asset Type</th><th>Village</th><th>GP</th><th>Status</th><th>Planned / Completion</th><th>Evidence</th><th>Action</th></tr></thead><tbody>${state.assets.map(r=>`<tr>${r.slice(0,4).map(x=>`<td>${x}</td>`).join('')}<td>${badge(r[4],statusClass(r[4]))}</td><td>${r[5]}</td><td>${r[4]==='Planned'?'Missing':'Complete'}</td><td><button class="small-btn" onclick="showModal('${r[0]}',assetView('${r[0]}'))">View</button></td></tr>`).join('')}</tbody></table></div></div></div>`}
+function waterForm(){return `<div class="form-grid">
+<div class="section-title">Basic</div>${field('Intervention ID','IN-NEW-XXXX','text','System generated')}${field('Asset ID','Select / create asset','select','WA-001,WA-002,WA-003,WA-004')}${field('Intervention Type','Select type','select','Check Dam,Farm Pond,Recharge Pit,Water Storage,Other')}${field('Village','Select village','select','Kovilur,Melur,Kottai,Thoppur')}${field('Start Date','dd-mm-yyyy','date','Required')}${field('Completion Date','dd-mm-yyyy','date','Required when completed')}${field('Status','Planned','select','Planned,In Progress,Completed,Verified,Closed')}${field('Area Served / HH','0','number','Must be >= 0')}${field('O&M Owner','Select','select','VWC,User Group,Panchayat,Other')}${field('GPS Coordinates','Auto capture','text','Required for field verification')}${field('Before Photo','Choose file','file','Evidence')}${field('After Photo','Choose file','file','Evidence')}${field('Completion Remarks','Notes','textarea','Optional')}
+<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Intervention')">Save Draft</button><button class="primary" onclick="saveDemo('Intervention')">Submit for Verification</button></div></div>`}
+function assetView(id){return `<div class="grid grid-2"><div class="panel"><div class="panel-head"><h3>${id}</h3><span>${badge('Verified','approved')}</span></div><div class="panel-body"><div class="form-grid"><div><b>Type</b><br>Recharge Pit</div><div><b>Village</b><br>Kottai</div><div><b>GP</b><br>Melur GP</div><div><b>O&M Owner</b><br>VWC</div><div><b>Completion</b><br>30 Aug 2026</div><div><b>Beneficiary HH</b><br>86</div></div></div></div><div class="panel"><div class="panel-head"><h3>Workflow</h3></div><div class="panel-body"><div class="timeline"><div class="tl"><strong>Verified</strong><div>M&E-01 • 31 Aug 2026</div></div><div class="tl"><strong>Completed</strong><div>Engineer-02 • 30 Aug 2026</div></div><div class="tl"><strong>In Progress</strong><div>Engineer-02 • 10 Aug 2026</div></div></div></div></div></div>`}
+
+function agriPage(){return `<div class="page-head"><div><h2>Agriculture & Livelihood</h2><p>Crop, land, irrigation, yield and livelihood outcome monitoring.</p></div><button class="primary" onclick="showModal('Add Farm Outcome',agriForm())">＋ Add Farm Outcome</button></div>
+<div class="cards">${kpi('Farmers Enrolled','1,426','🌾','programme farmers','+63 this month')}${kpi('Irrigated Area','1,184 ac','🚜','linked to households','76%')}${kpi('Avg. Yield Increase','18%','📈','vs baseline','+4 pp')}${kpi('Income Growth','14%','💰','tracked households','Year to date')}</div><div style="height:16px"></div>
+<div class="grid grid-2"><div class="panel"><div class="panel-head"><h3>Crop Performance</h3><span>Illustrative sample</span></div><div class="panel-body">${progress('Millet / cereal',74,700,518)}${progress('Vegetables',61,430,262)}${progress('Pulses',56,280,157)}${progress('Horticulture',48,190,91)}</div></div><div class="panel"><div class="panel-head"><h3>Livelihood Outcome Tracking</h3></div><div class="panel-body"><div class="notice info">Link each outcome to household, intervention and assessment period so M&E reports can reconcile records.</div><div style="height:12px"></div><table><tr><th>Measure</th><th>Baseline</th><th>Current</th><th>Variance</th></tr><tr><td>Annual farm income</td><td>₹ 86,000</td><td>₹ 98,000</td><td>+14%</td></tr><tr><td>Irrigated households</td><td>412</td><td>639</td><td>+227</td></tr><tr><td>Crop diversity index</td><td>1.7</td><td>2.3</td><td>+0.6</td></tr></table></div></div></div>`}
+function agriForm(){return `<div class="form-grid">${field('Farmer ID','Select farmer','select','FR-001,FR-002,FR-003')}${field('Household ID','Select household','select','HH-0001,HH-0002,HH-0003')}${field('Season','Select','select','Kharif,Rabi,Summer')}${field('Crop','Select crop','select','Millet,Pulses,Vegetables,Horticulture,Other')}${field('Area (acres)','0.00','number','Cannot be negative')}${field('Irrigation Source','Select','select','Farm Pond,Open Well,Borewell,Canal,Rainfed')}${field('Yield','0.00','number','Unit as agreed')}${field('Farm Income','₹ 0','number','Annualised amount')}${field('Assessment Period','Select','select','Baseline,Midline,Endline')}${field('Evidence / Remarks','Notes','textarea','Optional')}${field('GPS / Field Photo','Capture / upload','file','Optional / client decision')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Farm Outcome')">Save & Submit</button></div></div>`}
+
+function vwcPage(){return `<div class="page-head"><div><h2>Village Water Committee</h2><p>Committee members, meetings, responsibilities, action tracking and O&M readiness.</p></div><button class="primary" onclick="showModal('Add VWC',vwcForm())">＋ Add Committee</button></div><div class="cards">${kpi('VWC Identified','56','🤝','target coverage','36 strengthened')}${kpi('Meetings This Month','34','🗓️','recorded','91% on time')}${kpi('Action Items','18','📌','open actions','7 overdue')}${kpi('O&M Ready','29','✅','committees','52%')}</div><div style="height:16px"></div><div class="panel"><div class="panel-head"><h3>Committee Register</h3><span>Illustrative records</span></div><div class="panel-body table-wrap"><table><thead><tr><th>VWC ID</th><th>Village</th><th>Members</th><th>Last Meeting</th><th>O&M Status</th><th>Record Status</th></tr></thead><tbody><tr><td>VWC-001</td><td>Kovilur</td><td>11</td><td>04 Sep 2026</td><td>${badge('Ready','approved')}</td><td>${badge('Approved','approved')}</td></tr><tr><td>VWC-002</td><td>Melur</td><td>9</td><td>30 Aug 2026</td><td>${badge('In Progress','progress')}</td><td>${badge('Approved','approved')}</td></tr><tr><td>VWC-003</td><td>Kottai</td><td>12</td><td>29 Aug 2026</td><td>${badge('At Risk','returned')}</td><td>${badge('Verification Pending','pending')}</td></tr></tbody></table></div></div>`}
+function vwcForm(){return `<div class="form-grid">${field('VWC ID','VWC-NEW-XXXX','text','System generated')}${field('Village','Select village','select','Kovilur,Melur,Kottai,Thoppur')}${field('Formation Date','dd-mm-yyyy','date','Required')}${field('Chairperson','Name','text','Mandatory')}${field('Secretary','Name','text','Mandatory')}${field('Member Count','0','number','Must be >= 1')}${field('O&M Readiness','Select','select','Ready,In Progress,At Risk')}${field('Meeting Frequency','Select','select','Monthly,Quarterly,Other')}${field('Meeting Minutes','Upload','file','Optional / required per client')}${field('Action Items','Notes','textarea','Optional')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('VWC')">Save</button></div></div>`}
+
+function trainingPage(){return `<div class="page-head"><div><h2>Training & Exposure</h2><p>Plan events, participants, attendance, facilitators and outcome feedback.</p></div><button class="primary" onclick="showModal('Add Training Event',trainingForm())">＋ Add Training</button></div><div class="grid grid-2"><div class="panel"><div class="panel-head"><h3>Upcoming / Recent Events</h3><span>Participant tracking</span></div><div class="panel-body table-wrap"><table><thead><tr><th>Event</th><th>Date</th><th>Village</th><th>Target</th><th>Actual</th><th>Status</th></tr></thead><tbody><tr><td>Water-efficient agriculture</td><td>12 Sep</td><td>Kovilur</td><td>40</td><td>—</td><td>${badge('Planned','draft')}</td></tr><tr><td>Farmer exposure visit</td><td>02 Sep</td><td>Melur</td><td>30</td><td>28</td><td>${badge('Completed','approved')}</td></tr><tr><td>VWC governance</td><td>29 Aug</td><td>Kottai</td><td>25</td><td>25</td><td>${badge('Completed','approved')}</td></tr></tbody></table></div></div><div class="panel"><div class="panel-head"><h3>Attendance Summary</h3><span>Gender / geography ready</span></div><div class="panel-body"><div class="grid grid-3"><div class="kpi"><div class="kpi-label">Women</div><strong>312</strong></div><div class="kpi"><div class="kpi-label">Men</div><strong>372</strong></div><div class="kpi"><div class="kpi-label">Youth</div><strong>126</strong></div></div><div style="height:15px"></div>${progress('Attendance capture completion',91,750,684)}</div></div></div>`}
+function trainingForm(){return `<div class="form-grid">${field('Training ID','TR-NEW-XXXX','text','System generated')}${field('Training Type','Select','select','Farmer training,Exposure visit,VWC governance,Water management,Other')}${field('Event Date','dd-mm-yyyy','date','Required')}${field('Village / Venue','Select','select','Kovilur,Melur,Kottai,Thoppur')}${field('Facilitator','Name','text','Required')}${field('Target Participants','0','number','Must be >= 0')}${field('Actual Attendance','0','number','Cannot exceed captured attendance rules')}${field('Women Participants','0','number','Must be <= actual')}${field('Evidence / Attendance Sheet','Upload','file','Recommended')}${field('Outcome / Feedback','Notes','textarea','Optional')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Training')">Save & Submit</button></div></div>`}
+
+function mePage(){return `<div class="page-head"><div><h2>M&E / Outcomes</h2><p>Baseline, targets, achievement, variance and evidence by indicator.</p></div><button class="primary" onclick="showModal('Add M&E Observation',meForm())">＋ Add Observation</button></div><div class="panel"><div class="panel-head"><h3>Indicator Performance</h3><span>Assessment period: Midline</span></div><div class="panel-body table-wrap"><table><thead><tr><th>Indicator</th><th>Unit</th><th>Baseline</th><th>Target</th><th>Achievement</th><th>%</th><th>Evidence</th><th>Status</th></tr></thead><tbody>
+<tr><td>Households with improved water security</td><td>HH</td><td>820</td><td>2,200</td><td>1,496</td><td>68%</td><td>✓</td><td>${badge('On Track','approved')}</td></tr>
+<tr><td>Households receiving irrigation support</td><td>HH</td><td>412</td><td>900</td><td>639</td><td>71%</td><td>✓</td><td>${badge('On Track','approved')}</td></tr>
+<tr><td>Farmers trained</td><td>People</td><td>155</td><td>900</td><td>684</td><td>76%</td><td>✓</td><td>${badge('On Track','approved')}</td></tr>
+<tr><td>Strengthened VWC</td><td>Committee</td><td>6</td><td>56</td><td>36</td><td>64%</td><td>⚠</td><td>${badge('Needs Review','pending')}</td></tr>
+</tbody></table></div></div><div style="height:16px"></div><div class="grid grid-2"><div class="panel"><div class="panel-head"><h3>Assessment Workflow</h3></div><div class="panel-body"><div class="timeline"><div class="tl"><strong>Midline data collection</strong><div>Open • field teams</div></div><div class="tl"><strong>Evidence verification</strong><div>7 indicators awaiting review</div></div><div class="tl"><strong>Programme approval</strong><div>Manager approval after M&E verification</div></div></div></div></div><div class="panel"><div class="panel-head"><h3>Calculation Rules</h3></div><div class="panel-body"><div class="notice info">Target achievement % = Achievement / Target × 100. Approved indicators are locked from normal editing; corrections require controlled return/re-approval.</div></div></div></div>`}
+function meForm(){return `<div class="form-grid">${field('Indicator','Select indicator','select','Water security,Irrigation support,Farmers trained,VWC strengthened,Other')}${field('Assessment Period','Midline','select','Baseline,Midline,Endline')}${field('Baseline','0','number','Numeric or configured unit')}${field('Target','0','number','Must be >= baseline where applicable')}${field('Achievement','0','number','Cannot be negative')}${field('Evidence','Upload','file','Required for selected indicators')}${field('Observation Date','dd-mm-yyyy','date','Required')}${field('Remarks','Notes','textarea','Optional')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('M&E Observation')">Save & Submit</button></div></div>`}
+
+function convergencePage(){return `<div class="page-head"><div><h2>Convergence</h2><p>Track government schemes, partner contributions and linked programme outcomes.</p></div><button class="primary" onclick="showModal('Add Convergence Record',convergenceForm())">＋ Add Record</button></div><div class="cards">${kpi('Active Linkages','29','🏛️','schemes / partners','+5')}${kpi('Estimated Value','₹ 48.2L','💰','tracked convergence','FY26')}${kpi('Households Linked','1,284','👥','beneficiary linkages','58%')}${kpi('Evidence Pending','6','📎','records','Review')}</div><div style="height:16px"></div><div class="panel"><div class="panel-head"><h3>Convergence Register</h3></div><div class="panel-body table-wrap"><table><thead><tr><th>Record</th><th>Scheme / Partner</th><th>Village</th><th>Type</th><th>Value</th><th>Households</th><th>Status</th></tr></thead><tbody><tr><td>CV-001</td><td>Water conservation scheme</td><td>Kovilur</td><td>Infrastructure</td><td>₹12.5L</td><td>210</td><td>${badge('Approved','approved')}</td></tr><tr><td>CV-002</td><td>Agriculture department</td><td>Melur</td><td>Inputs / training</td><td>₹8.6L</td><td>164</td><td>${badge('Verified','approved')}</td></tr><tr><td>CV-003</td><td>Panchayat contribution</td><td>Kottai</td><td>Community</td><td>₹2.1L</td><td>86</td><td>${badge('Pending','pending')}</td></tr></tbody></table></div></div>`}
+function convergenceForm(){return `<div class="form-grid">${field('Convergence ID','CV-NEW-XXXX','text','System generated')}${field('Scheme / Partner','Select partner','select','Water conservation scheme,Agriculture department,Panchayat contribution,Other')}${field('Village','Select','select','Kovilur,Melur,Kottai,Thoppur')}${field('Linkage Type','Select','select','Infrastructure,Inputs/Training,Community,Other')}${field('Contribution Value','₹ 0','number','Amount as applicable')}${field('Households Linked','0','number','Must be >= 0')}${field('Evidence','Upload','file','Required per configuration')}${field('Remarks','Notes','textarea','Optional')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Convergence')">Save & Submit</button></div></div>`}
+
+function reportsPage(){return `<div class="page-head"><div><h2>Reports & Exports</h2><p>Operational, management, donor and M&E reporting catalogue.</p></div><button class="secondary" onclick="showModal('Report Scheduler',schedulerForm())">⏰ Schedule Report</button></div><div class="grid grid-3">${['Household Master Register','Water Asset Register','Intervention Progress','Agriculture Outcome Report','Training & Attendance','VWC Status Report','M&E Indicator Report','Convergence Report','Pending Approval Report','Baseline / Midline / Endline','Management Summary','Donor / Board Report'].map((x,i)=>`<div class="panel"><div class="panel-body"><div style="font-size:22px;margin-bottom:7px">${['👨‍👩‍👧','💧','📈','🌾','🎓','🤝','📊','🏛️','⏳','🧭','📋','📝'][i]}</div><h3 style="margin:0 0 7px;font-size:14px">${x}</h3><p style="font-size:11px;color:var(--muted);min-height:32px">${['Households by geography and status','Asset type, condition, GPS and evidence','Planned vs completed by month','Yield, area and income outcomes','Event and participant breakdown','Committee health and action items','Target, achievement, variance and evidence','Scheme, value and linked HH','Records awaiting role action','Assessment comparison','Leadership KPIs and trends','Donor-aligned summary with evidence'][i]}</p><button class="small-btn" onclick="generateReport('${x}')">Run Report</button></div></div>`).join('')}</div>`}
+function schedulerForm(){return `<div class="form-grid">${field('Report','Select report','select','Household Master Register,Water Asset Register,M&E Indicator Report,Management Summary,Donor / Board Report')}${field('Frequency','Select','select','Daily,Weekly,Monthly,Quarterly')}${field('Recipients','Email addresses','text','Comma-separated')}${field('Format','Select','select','Excel,CSV,PDF')}${field('Filter Scope','Select','select','All assigned geography,Selected GP,Selected village')}${field('Run Time','HH:MM','text','e.g. 08:00')}${field('Active','Yes','select','Yes,No')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Report Schedule')">Save Schedule</button></div></div>`}
+
+function mastersPage(){return `<div class="page-head"><div><h2>Master Data</h2><p>Controlled reference data used by transactional forms and validation.</p></div><button class="primary" onclick="showModal('Add Master Record',masterForm())">＋ Add Master</button></div><div class="grid grid-3">${['Gram Panchayat','Village','Crop','Water Asset Type','Intervention Type','Social Category','Livelihood Type','Training Type','Indicator','Scheme / Partner','User Role','Status / Reason'].map((x,i)=>`<div class="panel"><div class="panel-head"><h3>${x}</h3><span>${[4,14,9,8,10,5,7,8,12,12,6,8][i]||4} records</span></div><div class="panel-body"><div class="notice info">Use this master to keep labels consistent across forms, filters and reports.</div><div style="height:10px"></div><button class="small-btn" onclick="showModal('${x} Master',masterView('${x}'))">Manage</button></div></div>`).join('')}</div>`}
+function masterForm(){return `<div class="form-grid">${field('Master Type','Select','select','Gram Panchayat,Village,Crop,Water Asset Type,Indicator,Scheme / Partner,User Role')}${field('Code','Unique code','text','Mandatory')} ${field('Name','Display name','text','Mandatory')}${field('Parent','Select parent','select','—,Kovilur GP,Melur GP,Thoppur GP')}${field('Active','Yes','select','Yes,No')}${field('Sort Order','1','number','Optional')}${field('Remarks','Notes','textarea','Optional')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Master Record')">Save</button></div></div>`}
+function masterView(x){return `<div class="table-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Parent</th><th>Active</th><th>Action</th></tr></thead><tbody><tr><td>001</td><td>${x} A</td><td>—</td><td>${badge('Active','approved')}</td><td><button class="small-btn">Edit</button></td></tr><tr><td>002</td><td>${x} B</td><td>Example parent</td><td>${badge('Active','approved')}</td><td><button class="small-btn">Edit</button></td></tr></tbody></table></div>`}
+
+function usersPage(){return `<div class="page-head"><div><h2>Users & Roles</h2><p>Role-based access, geography assignment and approval responsibility.</p></div><button class="primary" onclick="showModal('Add User',userForm())">＋ Add User</button></div><div class="panel"><div class="panel-head"><h3>User Register</h3><span>Role-wise permissions</span></div><div class="panel-body table-wrap"><table><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Geography</th><th>Last Login</th><th>Status</th><th>Action</th></tr></thead><tbody><tr><td>PM-01</td><td>Programme Manager</td><td>Program Manager</td><td>All</td><td>08 Sep 2026 10:15</td><td>${badge('Active','approved')}</td><td><button class="small-btn">View</button></td></tr><tr><td>FC-02</td><td>Field Coordinator</td><td>Field Coordinator</td><td>Melur GP</td><td>08 Sep 2026 09:48</td><td>${badge('Active','approved')}</td><td><button class="small-btn">View</button></td></tr><tr><td>ME-01</td><td>M&E Associate</td><td>M&E Associate</td><td>All</td><td>08 Sep 2026 09:53</td><td>${badge('Active','approved')}</td><td><button class="small-btn">View</button></td></tr></tbody></table></div></div>`}
+function userForm(){return `<div class="form-grid">${field('User ID','Auto / unique','text','System generated')}${field('Name','Full name','text','Mandatory')}${field('Username','Login name','text','Unique')}${field('Email','user@example.org','email','Mandatory')}${field('Role','Select','select','Program Manager,Field Coordinator,M&E Associate,Engineer,CRP,System Administrator')}${field('Geography Scope','Select','select','All,Kovilur GP,Melur GP,Thoppur GP,Specific Village')}${field('Active','Yes','select','Yes,No')}${field('Password / SSO','Managed by auth','text','Production: Spring Security / SSO')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('User')">Save User</button></div></div>`}
+
+function auditPage(){return `<div class="page-head"><div><h2>Audit & Activity</h2><p>Immutable workflow, login, data-change and export history.</p></div><button class="secondary" onclick="showModal('Audit Filter',filterForm())">⚙ Filter</button></div><div class="panel"><div class="panel-head"><h3>Activity Log</h3><span>Recent 50 events</span></div><div class="panel-body table-wrap"><table><thead><tr><th>Timestamp</th><th>User</th><th>Module</th><th>Record</th><th>Action</th><th>Old → New</th><th>IP</th></tr></thead><tbody>
+<tr><td>08 Sep 10:18:02</td><td>CRP-07</td><td>Household</td><td>HH-2188</td><td>Submit</td><td>Draft → Submitted</td><td>10.10.2.17</td></tr>
+<tr><td>08 Sep 09:54:31</td><td>ME-01</td><td>Water Asset</td><td>WA-003</td><td>Verify</td><td>Completed → Verified</td><td>10.10.3.41</td></tr>
+<tr><td>08 Sep 09:17:44</td><td>PM-01</td><td>Intervention</td><td>IN-044</td><td>Return</td><td>Submitted → Returned</td><td>10.10.1.12</td></tr>
+<tr><td>08 Sep 08:46:19</td><td>Admin-01</td><td>Users</td><td>FC-02</td><td>Edit</td><td>Inactive → Active</td><td>10.10.1.10</td></tr>
+</tbody></table></div></div><div style="height:16px"></div><div class="notice warn">Production requirement: retain actor, timestamp, IP/device (where feasible), action, old/new values for important fields, and workflow history. Normal users must not be able to delete audit logs.</div>`}
+
+function filterForm(){return `<div class="form-grid">${field('Date From','dd-mm-yyyy','date','Optional')}${field('Date To','dd-mm-yyyy','date','Optional')}${field('Gram Panchayat','All','select','All,Kovilur GP,Melur GP,Thoppur GP')}${field('Village','All','select','All,Kovilur,Melur,Kottai,Thoppur')}${field('Status','All','select','All,Draft,Submitted,Verification Pending,Returned,Approved,Closed')}${field('Record Type','All','select','All,Household,Intervention,Training,M&E,VWC,Convergence')}${field('Assigned User','All','select','All,CRP,Field Coordinator,M&E Associate,Program Manager')}${field('Search Text','Optional','text','ID, name or keyword')}<div class="full actions"><button class="secondary" onclick="closeModal()">Cancel</button><button class="primary" onclick="saveDemo('Filter')">Apply Filter</button></div></div>`}
+function quickActionForm(){return `<div class="grid grid-2"><div class="panel"><div class="panel-body"><h3 style="margin-top:0">Add Programme Data</h3><p style="font-size:12px;color:var(--muted)">Start a new record in the main transactions.</p><div class="actions"><button class="secondary" onclick="closeModal();showModal('Add Household',householdForm())">Household</button><button class="secondary" onclick="closeModal();showModal('Add Intervention',waterForm())">Intervention</button><button class="secondary" onclick="closeModal();showModal('Add Training Event',trainingForm())">Training</button></div></div></div><div class="panel"><div class="panel-body"><h3 style="margin-top:0">Operational Actions</h3><p style="font-size:12px;color:var(--muted)">Review records awaiting action.</p><div class="actions"><button class="secondary" onclick="showPage('reports');closeModal()">Reports</button><button class="secondary" onclick="showPage('audit');closeModal()">Audit</button></div></div></div></div>`}
+
+function field(label,placeholder,type='text',help=''){
+ if(type==='select'){const opts=placeholder.split(',');return `<div class="field"><label>${label}</label><select>${opts.map(o=>`<option>${o}</option>`).join('')}</select><div style="font-size:10px;color:var(--muted);margin-top:3px">${help}</div></div>`}
+ if(type==='textarea') return `<div class="field full"><label>${label}</label><textarea rows="3" placeholder="${placeholder}"></textarea><div style="font-size:10px;color:var(--muted);margin-top:3px">${help}</div></div>`;
+ return `<div class="field"><label>${label}</label><input type="${type}" placeholder="${placeholder}" value="${type==='text' && !placeholder.includes('Enter') && !placeholder.includes('Notes') && !placeholder.includes('Choose') ? placeholder : ''}"><div style="font-size:10px;color:var(--muted);margin-top:3px">${help}</div></div>`;
+}
+function badge(txt,cl){return `<span class="status ${cl}">${txt}</span>`}
+function statusClass(s){if(/Approved|Verified|Active|Completed|Closed|Ready|On Track/i.test(s))return'approved';if(/Pending|Planned/i.test(s))return'pending';if(/Returned|At Risk|Missing/i.test(s))return'returned';if(/Progress|In Progress/i.test(s))return'progress';return'draft'}
+function kpi(label,value,icon,sub,trend){return `<div class="kpi"><div class="kpi-top"><span class="kpi-label">${label}</span><span class="kpi-icon">${icon}</span></div><strong>${value}</strong><div class="trend">${trend} · <span style="color:var(--muted)">${sub}</span></div></div>`}
+function progress(label,pct,target,actual){return `<div class="progress-row"><div class="progress-label"><span>${label}</span><span><b>${actual}</b> / ${target} (${pct}%)</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`}
+function saveDemo(type){closeModal();showToast(type+' saved in prototype mode. Connect this action to Spring Boot API in development.')}
+function showModal(title,body){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=body;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function showToast(msg){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;right:22px;bottom:22px;background:#253047;color:#fff;padding:11px 15px;border-radius:8px;box-shadow:0 8px 28px rgba(0,0,0,.22);z-index:80;font-size:12px';document.body.appendChild(t)}t.textContent=msg;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',2600)}
+function filterTable(input,id){const q=input.value.toLowerCase();document.querySelectorAll('#'+id+' tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')}
+function filterMenus(){const q=document.getElementById('menuSearch').value.toLowerCase();document.querySelectorAll('.nav-item').forEach(i=>i.style.display=i.innerText.toLowerCase().includes(q)?'flex':'none')}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('hidden')}
+function exportCSV(){showToast('Demo export prepared. Production version will generate XLSX/CSV through Spring Boot.')}
+function generateReport(name){showToast(name+' generated in prototype mode.')}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('click',e=>{
+  const wrap = document.querySelector('.user-menu-wrap');
+  const menu = document.getElementById('userMenu');
+  if(wrap && menu && !wrap.contains(e.target)) menu.classList.remove('show');
+});
+</script>
+</body>
+</html>
